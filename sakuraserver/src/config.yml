@@ -1,0 +1,18 @@
+# SakuraServerPlugin
+# これはデフォルトの設定ファイルです
+Enable: true
+BroadcastOnMobDeath: false
+CancelUnloadDragonChunk: true
+HealSignCost: 10000
+
+FlyModeTimeOfMinute: 30
+FlyModeCost: 5000
+FlyModePlayersAtOneTime: 3
+
+Potions:
+    JUMP:
+        Cost: 200
+    SPEED:
+        Cost: 400
+    POISON:
+        Cost: 10

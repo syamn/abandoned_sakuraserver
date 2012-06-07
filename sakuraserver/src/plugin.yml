@@ -1,0 +1,59 @@
+##  Plugin Information  ##
+name: SakuraServer
+version: 1.90
+main: syam.SakuraServer.SakuraServer
+description: SakuraServer Plugin!
+website: http://sakura-server.net/
+depend: [Vault, PermissionsEx]
+##  Original Author     ##
+author: syam
+commands:
+    sakura:
+      usage: /sakura help - to see the help
+      aliases: [sakuraserver]
+      description: Change staff color
+    admin:
+      usage: /admin help - to see the help
+      description: SakuraServer Administrator commands
+    jailapply:
+      usage: /jailapply
+      description: Apply jail griefer
+    pot:
+      usage: /pot - to see the help
+      aliases: [sakurapot]
+      description: Pot effect
+    flymode:
+      usage: /flymode - to see the help
+      aliases: [fm]
+      description: Flymode!
+    register:
+      usage: /register - too see the help.
+      aliases: [reg]
+      description: Register your account.
+    password:
+      usage: /password - too see the help.
+      aliases: [passwd, pwd]
+      description: Change your password.
+    syamn:
+      usage: /syamn - too see the info
+      aliases: [syam, しゃむ]
+      description: See the admin info
+permissions:
+    sakuraserver.admin:
+        default: op
+        description: Administrator group
+    sakuraserver.mod:
+        default: false
+        description: Moderator group
+    sakuraserver.helper:
+        default: false
+        description: Helper group
+    sakuraserver.vip:
+        default: false
+        description: VIP group
+    sakuraserver.citizen:
+        default: false
+        description: Citizen group
+    sakuraserver.visitor:
+        default: false
+        description: Visitor group
