@@ -7,6 +7,7 @@ import org.bukkit.command.CommandExecutor;
 
 import syam.SakuraServer.commands.AdminCommand;
 import syam.SakuraServer.commands.FlymodeCommand;
+import syam.SakuraServer.commands.JailapplyCommand;
 import syam.SakuraServer.commands.MiscCommand;
 import syam.SakuraServer.commands.PasswordCommand;
 import syam.SakuraServer.commands.PotCommand;
@@ -23,7 +24,7 @@ public class SakuraCommandRegister {
 	public static void registerCommands(){
 		registerCommand("admin", new AdminCommand());
 		registerCommand("flymode", new FlymodeCommand());
-		registerCommand("jailapply", new FlymodeCommand());
+		registerCommand("jailapply", new JailapplyCommand());
 		registerCommand("register", new RegisterCommand());
 		registerCommand("password", new PasswordCommand());
 		registerCommand("pot", new PotCommand());
