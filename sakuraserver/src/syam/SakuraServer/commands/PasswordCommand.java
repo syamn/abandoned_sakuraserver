@@ -26,7 +26,6 @@ public class PasswordCommand implements CommandExecutor {
 				return true;
 			}
 			Player player = (Player) sender;
-
 			// 登録処理開始
 			if (args.length == 2){
 				Actions.message(null, player, "&6登録情報の更新を行っています..");

@@ -24,6 +24,7 @@ public class JailapplyCommand implements CommandExecutor {
 				return true;
 			}
 			Player player = (Player) sender;
+
 			if(SakuraServer.playerData.containsKey(player) &&
 					SakuraServer.playerData.get(player).getLastKillerName() != null){
 				// 投獄

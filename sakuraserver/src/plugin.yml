@@ -16,7 +16,7 @@ commands:
       usage: /admin help - to see the help
       description: SakuraServer Administrator commands
     jailapply:
-      usage: /jailapply
+      usage: /jailapply - to apply jail griefer
       description: Apply jail griefer
     pot:
       usage: /pot - to see the help
