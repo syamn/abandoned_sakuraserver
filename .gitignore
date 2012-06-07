@@ -1,3 +1,6 @@
+# Security files
+SakuraSecurity.java
+
 # Eclipse stuff
 .classpath
 .project
@@ -21,3 +24,7 @@
 *.ipr
 *.iws
 .idea/
+
+# others
+*.dat
+*.tmp
