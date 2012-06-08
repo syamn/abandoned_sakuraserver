@@ -13,6 +13,7 @@ import syam.SakuraServer.commands.PotCommand;
 import syam.SakuraServer.commands.RegisterCommand;
 import syam.SakuraServer.commands.SakuraCommand;
 
+
 public class SakuraCommandRegister {
 	public final static Logger log = SakuraServer.log;
 	private static final String logPrefix = SakuraServer.logPrefix;
