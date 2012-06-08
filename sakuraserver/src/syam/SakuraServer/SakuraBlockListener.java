@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Instrument;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,6 +19,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -30,6 +32,8 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 
 public class SakuraBlockListener implements Listener {
@@ -95,12 +99,17 @@ public class SakuraBlockListener implements Listener {
 			return;
 		}
 
+		// クリエイティブも無視
+		if (player.getGameMode() == GameMode.CREATIVE){
+			return;
+		}
+
 		int ran = (int)(Math.random() * 100); // 0-99 random
 
 		// 爆発させる
-		if (ran < 15){ // 0-14 → 15%
+		if (ran < 20){ // 0-19 → 20%
 			player.setNoDamageTicks(40); // 爆発時にダメージを受けないよう2秒間無敵
-			block.getWorld().createExplosion(block.getLocation(), (float) 4.5, false);
+			block.getWorld().createExplosion(block.getLocation(), (float) 4.0, false);
 		}
 	}
 
