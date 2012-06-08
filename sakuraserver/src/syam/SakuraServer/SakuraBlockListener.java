@@ -100,7 +100,7 @@ public class SakuraBlockListener implements Listener {
 		// 爆発させる
 		if (ran < 15){ // 0-14 → 15%
 			player.setNoDamageTicks(40); // 爆発時にダメージを受けないよう2秒間無敵
-			block.getWorld().createExplosion(block.getLocation(), (float) 3.0, false);
+			block.getWorld().createExplosion(block.getLocation(), (float) 4.5, false);
 		}
 	}
 
