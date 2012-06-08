@@ -73,11 +73,34 @@ public class SakuraBlockListener implements Listener {
 		Player player = event.getPlayer();
 
 		if (block.getType() == Material.DIAMOND_ORE){
-
 			// 音を鳴らす
 			List<Note> notes = new ArrayList<Note>();
 			notes.add(new Note(16));
 			Actions.playNote(player, notes, 0L);
+		}
+	}
+
+	// レッドストーン鉱石を壊した
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onRedstoneOreBreak(BlockBreakEvent event){
+		// ここには何も書かない
+		if (event.isCancelled()){
+			return;
+		}
+		Player player = event.getPlayer();
+		Block block = event.getBlock();
+
+		// アイテムID 73:Redstone ore || 74:Glowing redstone ore 以外は返す
+		if (block.getWorld() != Bukkit.getServer().getWorld("resource") || (block.getTypeId() != 73 && block.getTypeId() != 74)){
+			return;
+		}
+
+		int ran = (int)(Math.random() * 100); // 0-99 random
+
+		// 爆発させる
+		if (ran < 15){ // 0-14 → 15%
+			player.setNoDamageTicks(40); // 爆発時にダメージを受けないよう2秒間無敵
+			block.getWorld().createExplosion(block.getLocation(), (float) 3.0, false);
 		}
 	}
 
