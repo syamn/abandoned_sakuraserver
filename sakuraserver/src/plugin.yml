@@ -1,6 +1,6 @@
 ##  Plugin Information  ##
 name: SakuraServer
-version: 2.00
+version: 2.10
 main: syam.SakuraServer.SakuraServer
 description: SakuraServer Plugin!
 website: http://sakura-server.net/

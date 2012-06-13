@@ -4,6 +4,8 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -188,27 +190,20 @@ public class AdminCommand implements CommandExecutor {
 			}
 
 			// テスト・デバッグ用
-			if (args.length >= 2 && args[0].equalsIgnoreCase("test")){
+			if (args.length >= 1 && args[0].equalsIgnoreCase("test")){
 				if (!sender.hasPermission("sakuraserver.admin")){
 					Actions.message(sender, null, "&cこのコマンドを実行する権限がありません");
 					return true;
 				}
+				Player player = (Player)sender;
 				// ここからデバッグ用
 
-				Player player = (Player)sender;
-				OfflinePlayer targetOfflinePlayer = Bukkit.getServer().getOfflinePlayer(args[1]);
-
-				if(targetOfflinePlayer == null || !targetOfflinePlayer.isOnline()){
-					return true;
+				Location targetLoc = null;
+				for(short i = 0; i < 100; i++){
+					// スポーンさせる足場のある座標をランダムで取得
+					targetLoc = Actions.getRandomLocation(Bukkit.getWorld("hard_end"), 130, -130, 130, -130);
+					Actions.spawnECforHardEnd(targetLoc, 10, 40);
 				}
-
-				Player targetPlayer = (Player) targetOfflinePlayer;
-
-				if (targetPlayer.getPassenger() != null){
-					targetPlayer.eject();
-				}
-
-				targetPlayer.setPassenger(player);
 
 				// ここまで
 				return true;

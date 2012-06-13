@@ -32,6 +32,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -112,8 +113,7 @@ public class SakuraPlayerListener implements Listener {
 			if (player.getHealth() < 20){
 				player.setHealth(player.getHealth() + 1);
 			}
-			Actions.message(null, player, "&b ここはハードエンドです！&cドラゴンにダメージを与えたとき、");
-			Actions.message(null, player, "&b &cランダムでMOBが召喚されます！");
+			Actions.message(null, player, "&b ここはハードエンドです！&c危険です！");
 			Actions.message(null, player, "&b メインワールドに戻るには &f/spawn &bコマンドを使ってください");
 		}
 
@@ -244,15 +244,30 @@ public class SakuraPlayerListener implements Listener {
 	}
 
 	/**
+	 * プレイヤーが空島から落ちた
+	 * @param event
+	 */
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onPlayerFallOfSkyland(PlayerMoveEvent event){
+		Player player = event.getPlayer();
+
+		// 空島以外は処理しない
+		if (player.getWorld() == Bukkit.getWorld("skylands")){
+			Location toLoc = event.getTo();
+			if (toLoc.getY() <= -50.0D){
+				// Y=-50以下に落ちたらメインワールドの空へテレポート
+				Location newSky = new Location(Bukkit.getWorld("new"), toLoc.getX(), 500.0D, toLoc.getZ());
+				player.teleport(newSky, TeleportCause.PLUGIN);
+			}
+		}
+	}
+
+	/**
 	 * プレイヤーが動いた
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerMove(PlayerMoveEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
 		Player player = event.getPlayer();
 		Location fromLoc = event.getFrom();
 		Location toLoc = event.getTo();

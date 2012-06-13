@@ -85,12 +85,8 @@ public class SakuraBlockListener implements Listener {
 	}
 
 	// レッドストーン鉱石を壊した
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onRedstoneOreBreak(BlockBreakEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
 

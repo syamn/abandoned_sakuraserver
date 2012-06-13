@@ -7,6 +7,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -23,16 +24,19 @@ import ru.tehkode.permissions.PermissionUser;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -377,6 +381,37 @@ public class Actions {
 	}
 
 	/**
+	 * 真下のブロックを操作して黒曜石なら削除
+	 * @param block
+	 */
+	public static void removeDownObsidian(Block block){
+		Block relative = block.getRelative(BlockFace.DOWN, 1);
+
+		if(relative.getType()==Material.OBSIDIAN){
+			// 真下のブロックが黒曜石ならここで再度呼び出す
+			removeDownObsidian(relative);
+		}
+		if(block.getType()==Material.OBSIDIAN){
+			block.setType(Material.AIR);
+		}
+	}
+
+	/**
+	 * 真下が岩盤で無ければ足場を作る
+	 */
+	public static void setDownBedrock(Block block){
+		Block relative = block.getRelative(BlockFace.DOWN, 1);
+
+		if(relative.getType() != Material.BEDROCK && relative.getLocation().getBlockY() >= 0){
+			setDownBedrock(relative);
+		}
+		if(block.getType() != Material.BEDROCK){
+			block.setType(Material.BEDROCK);
+		}
+
+	}
+
+	/**
 	 * 文字列の中に全角文字が含まれているか判定
 	 * @param s 判定する文字列
 	 * @return 1文字でも全角文字が含まれていればtrue 含まれていなければfalse
@@ -458,6 +493,114 @@ public class Actions {
 	}
 	public static String returnBlockLocationString(Location loc){
 		return loc.getWorld().getName()+":"+loc.getBlockX()+","+loc.getBlockY()+","+loc.getBlockZ();
+	}
+
+	public static Location getRandomLocation(World world, int maxX, int minX, int maxZ, int minZ){
+		int randX = 0;
+		int randZ = 0;
+		int y = -1;
+
+		do{
+			// XZ座標は引数のmin,max値からランダムに選ぶ
+			randX = minX + (int)(Math.random() * (maxX - minX));
+			randZ = minZ + (int)(Math.random() * (maxZ - minZ));
+			// Y座標は安全な所になるまでXZ座標を変えて取得する
+			y = getValidHighestBlock(world, randX, randZ);
+		}while (y == -1);
+
+		// 安全な座標を返す
+		return new Location(world, (double)randX + 0.5D, (double)y, (double)randZ + 0.5D);
+	}
+	private static int getValidHighestBlock(World world, int x, int z){
+		world.getChunkAt(new Location(world, x, 0, z)).load(false);
+
+		int y = -1;
+		int blockid = 0;
+
+		// ネザーかそれ以外かで処理を分ける
+		if(world.getEnvironment().equals(Environment.NETHER)){
+			int blockYid = world.getBlockTypeIdAt(x, y, z);
+			int blockYid2 = world.getBlockTypeIdAt(x, y+1, z);
+
+			// ネザーでは、Y=0 → Y=128 まで走査、空気の1ブロック下のY座標を保存
+			y = 0;
+			while(y < 129 || (blockYid != 0 && blockYid2 != 0)){
+				y++;
+				blockYid = blockYid2;
+				blockYid2 = world.getBlockTypeIdAt(x, y+1, z);
+			}
+			if (y == 128) return -1;
+
+			// 足下のブロックをセット
+			blockid = world.getBlockTypeIdAt(x, y -1, z);
+		}else{
+			// 他のワールドでは、y=256 → y=0 まで走査、一番高いブロックのY座標を保存
+			y = 257;
+			while(y >= 0 && blockid == 0){
+				y--;
+				blockid = world.getBlockTypeIdAt(x, y, z);
+			}
+			if(y < 0) return -1; // 走査したxz座標にブロックが無かった
+		}
+		// 足下が溶岩/水なら-1
+		if (blockid == 8) return -1;
+		if (blockid == 9) return -1;
+		if (blockid == 10) return -1;
+		if (blockid == 11) return -1;
+		// 葉っぱ
+		if (blockid == 18) return -1;
+		// 炎
+		if (blockid == 51) return -1;
+
+		// ブロックチェックにパスしたらy座標を返す
+		return y + 1;
+	}
+
+	/**
+	 * エンダークリスタルをスポーンさせる
+	 * @param loc スポーンさせる座標
+	 */
+	public static Location spawnEnderCrystal(Location loc, boolean force){
+		Location under = loc.getBlock().getLocation(); // スポーンさせるクリスタルの岩盤ブロック部分
+		Location upper = under.clone().add(0.0D, 1.0D, 0.0D); // 炎ブロック部分
+
+		if(force || (under.getBlock().isEmpty() && upper.getBlock().isEmpty())){
+			// クリスタルをスポーン
+			under.getWorld().spawn(under.add(0.5D, 0.0D, 0.5D), EnderCrystal.class);
+			under.getBlock().setType(Material.BEDROCK);
+			upper.getBlock().setType(Material.FIRE);
+
+			// スポーンさせたクリスタルの岩盤部分の座標を返す
+			return under;
+		}else{
+			return null;
+		}
+	}
+
+	public static void spawnECforHardEnd(Location loc, int postMin, int postMax){
+		// 引数が不正
+		if (postMin > postMax || postMin < 0 || postMax <= 0 ) return;
+
+		// ブロック座標取得
+		Location startLoc = loc.getBlock().getLocation();
+
+		// 乱数初期化
+		Random rnd = new Random();
+		int postLength = rnd.nextInt(postMax - postMin + 1) + postMin; // 乱数 int postMin～postMin 生成
+
+		// ループで柱を立てる
+		int i = 0;
+		while (postLength > i){
+			startLoc.getBlock().getRelative(BlockFace.UP, i).setType(Material.OBSIDIAN);
+			i++;
+		}
+
+		// クリスタルをスポーンさせる
+		Location targetLoc = Actions.spawnEnderCrystal(startLoc.add(0.0D, (double)i, 0.0D), true);
+
+		// 爆発の煙と音を出す
+		targetLoc.getWorld().playEffect(targetLoc, Effect.SMOKE, 3);
+		targetLoc.getWorld().createExplosion(targetLoc, 0.0F, false);
 	}
 
 	/**
