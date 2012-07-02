@@ -20,6 +20,9 @@ public class SakuraMySqlManager {
 	private final static String mySqlServer = SakuraSecurity.mySqlServer;
 	private final static String mySqlUser = SakuraSecurity.mySqlUser;
 	private final static String mySqlPass = SakuraSecurity.mySqlPass;
+	private final static String mySqlServerVPS = SakuraSecurity.mySqlServerVPS;
+	private final static String mySqlUserVPS = SakuraSecurity.mySqlUserVPS;
+	private final static String mySqlPassVPS = SakuraSecurity.mySqlPassVPS;
 	public static String database = "minecraft"; // カレントデータベース
 	public final static String db_minecraft = "minecraft";
 	public final static String db_web = "sakura_web";
@@ -85,7 +88,7 @@ public class SakuraMySqlManager {
 	 * @return Connectionオブジェクト
 	 * @throws SQLException
 	 */
-	private Connection getConnection() throws SQLException{
+	public Connection getConnection() throws SQLException{
 		Connection conn = null;
 		try{
 			conn = DriverManager.getConnection(mySqlServer + database, mySqlUser, mySqlPass);
@@ -95,7 +98,7 @@ public class SakuraMySqlManager {
 		checkConnection(conn);
 		return conn;
 	}
-	private Connection getConnection(String dbname) throws SQLException{
+	public Connection getConnection(String dbname) throws SQLException{
 		Connection conn = null;
 		try{
 			conn = DriverManager.getConnection(mySqlServer + dbname, mySqlUser, mySqlPass);
@@ -105,7 +108,16 @@ public class SakuraMySqlManager {
 		checkConnection(conn);
 		return conn;
 	}
-
+	public Connection getVPSConnection() throws SQLException{
+		Connection conn = null;
+		try{
+			conn = DriverManager.getConnection(mySqlServerVPS + database, mySqlUserVPS, mySqlPassVPS);
+		}catch(Exception e){
+			log.severe(logPrefix+"MySQL connect error (VPS): "+e.getMessage());
+		}
+		checkConnection(conn);
+		return conn;
+	}
 
 	/**
 	 * データベースに接続中であるかを返します
@@ -263,7 +275,7 @@ public class SakuraMySqlManager {
 
 
 		try{
-			conn = getConnection();
+			conn = getVPSConnection();
 			ps = conn.prepareStatement(sql_ChangePassword);
 
 			// 各種値設定
@@ -298,13 +310,11 @@ public class SakuraMySqlManager {
 	}
 
 	// クエリを実行してヒットするかどうかを返します
-	public boolean isExistRow (String sql_select){
-		Connection conn = null;
+	public boolean isExistRow (Connection conn, String sql_select){
 		PreparedStatement ps =null;
 		ResultSet rs = null;
 
 		try{
-			conn = getConnection();
 			ps = conn.prepareStatement(sql_select);
 			rs = ps.executeQuery();
 

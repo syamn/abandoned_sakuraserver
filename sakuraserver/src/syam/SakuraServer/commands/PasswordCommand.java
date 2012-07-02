@@ -1,5 +1,7 @@
 package syam.SakuraServer.commands;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
@@ -31,7 +33,13 @@ public class PasswordCommand implements CommandExecutor {
 				Actions.message(null, player, "&6登録情報の更新を行っています..");
 				// 既に登録されていないか確認する
 				SakuraServer.dbm.changeDatabase(SakuraMySqlManager.db_web);
-				Boolean isExist = SakuraServer.dbm.isExistRow("SELECT * FROM `"+SakuraMySqlManager.table_userdata+"` WHERE `player_name` = \""+player.getName()+"\"");
+				Connection conn = null;
+				try {
+					conn = SakuraServer.dbm.getVPSConnection();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+				Boolean isExist = SakuraServer.dbm.isExistRow(conn, "SELECT * FROM `"+SakuraMySqlManager.table_userdata+"` WHERE `player_name` = \""+player.getName()+"\"");
 				if(!isExist){
 					Actions.message(null, player, "&cあなたは登録されていません！登録は /register コマンドです。");
 					return true;

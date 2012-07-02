@@ -1,5 +1,7 @@
 package syam.SakuraServer.commands;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,7 +37,13 @@ public class RegisterCommand implements CommandExecutor {
 				// 既に登録されていないか確認する
 				// ウェブ用データベースに変更
 				SakuraServer.dbm.changeDatabase(SakuraMySqlManager.db_web);
-				Boolean isExist = SakuraServer.dbm.isExistRow("SELECT * FROM `"+SakuraMySqlManager.table_userdata+"` WHERE `player_name` = \""+player.getName()+"\"");
+				Connection conn = null;
+				try {
+					conn = SakuraServer.dbm.getVPSConnection();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+				Boolean isExist = SakuraServer.dbm.isExistRow(conn, "SELECT * FROM `"+SakuraMySqlManager.table_userdata+"` WHERE `player_name` = \""+player.getName()+"\"");
 				if(isExist){
 					Actions.message(null, player, "&c既に登録されています！パスワード変更は /password コマンドを使います。");
 					return true;
@@ -50,7 +58,7 @@ public class RegisterCommand implements CommandExecutor {
 						return true;
 					}
 					// 既にメールアドレスが登録されていないか確認する
-					Boolean isExist2 = SakuraServer.dbm.isExistRow("SELECT * FROM `"+SakuraMySqlManager.table_userdata+"` WHERE `email` = \""+args[2].trim()+"\"");
+					Boolean isExist2 = SakuraServer.dbm.isExistRow(conn, "SELECT * FROM `"+SakuraMySqlManager.table_userdata+"` WHERE `email` = \""+args[2].trim()+"\"");
 					if(isExist2){
 						Actions.message(null, player, "&cそのメールアドレスは既に登録されています。");
 						return true;

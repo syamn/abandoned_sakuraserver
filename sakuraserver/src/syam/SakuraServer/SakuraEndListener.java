@@ -259,6 +259,7 @@ public class SakuraEndListener implements Listener {
 				// ランダムプレイヤーの真上にTNTをスポーン
 				for(short i = 0; i < 3; i++){
 					Random rnd = new Random(); // 乱数宣言
+					if (inWorldPlayers.size() < 1) return;
 					Location targetLoc = inWorldPlayers.get(rnd.nextInt(inWorldPlayers.size())).getLocation(); // ターゲットプレイヤー確定と座標取得
 					Location tntloc = new Location(targetLoc.getWorld(),targetLoc.getX(),dragonLocation.getY(),targetLoc.getZ());
 					ent.getWorld().spawn(tntloc, TNTPrimed.class);
@@ -353,7 +354,7 @@ public class SakuraEndListener implements Listener {
 					event.setFire(true);
 					break;
 				case PRIMED_TNT: // TNT
-					event.setRadius((float) 12.0);
+					event.setRadius((float) 14.0);
 					event.setFire(true);
 					break;
 			}
