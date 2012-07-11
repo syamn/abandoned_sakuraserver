@@ -25,9 +25,17 @@ public class PotCommand implements CommandExecutor {
 				return true;
 			}
 
-			if(args.length == 1 || args.length == 2){
-				Player player = (Player)sender;
+			Player player = (Player)sender;
 
+			// フラッグワールド無効
+			if (Bukkit.getWorld("flag") != null){
+				if (player.getWorld() == Bukkit.getWorld("flag")){
+					Actions.message(null, player, "&cこのワールドでこのコマンドは使えません！");
+					return true;
+				}
+			}
+
+			if(args.length == 1 || args.length == 2){
 				// ポーション名チェック
 				PotionEffectType potion = Actions.validPotion(args[0]);
 				if (potion == null){

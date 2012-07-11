@@ -11,6 +11,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import syam.SakuraServer.Actions;
 import syam.SakuraServer.SakuraServer;
@@ -198,12 +199,7 @@ public class AdminCommand implements CommandExecutor {
 				Player player = (Player)sender;
 				// ここからデバッグ用
 
-				Location targetLoc = null;
-				for(short i = 0; i < 100; i++){
-					// スポーンさせる足場のある座標をランダムで取得
-					targetLoc = Actions.getRandomLocation(Bukkit.getWorld("hard_end"), 130, -130, 130, -130);
-					Actions.spawnECforHardEnd(targetLoc, 10, 40);
-				}
+				player.getInventory().setHelmet(new ItemStack(35, 1, (short)0, (byte) 3));
 
 				// ここまで
 				return true;

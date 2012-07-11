@@ -103,9 +103,9 @@ public class SakuraBlockListener implements Listener {
 		int ran = (int)(Math.random() * 100); // 0-99 random
 
 		// 爆発させる
-		if (ran < 20){ // 0-19 → 20%
+		if (ran < 10){ // 0-19 → 20%
 			player.setNoDamageTicks(40); // 爆発時にダメージを受けないよう2秒間無敵
-			block.getWorld().createExplosion(block.getLocation(), (float) 4.0, false);
+			block.getWorld().createExplosion(block.getLocation(), (float) 1.0, false);
 		}
 	}
 

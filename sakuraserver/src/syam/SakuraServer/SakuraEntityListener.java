@@ -311,6 +311,11 @@ public class SakuraEntityListener implements Listener {
 				return;
 			}
 
+			// ゲームワールド例外
+			if (deader.getWorld() == Bukkit.getWorld("flag")){
+				return;
+			}
+
 			if(SakuraServer.playerData.containsKey(deader)){
 				SakuraServer.playerData.get(deader).setLastKillerName(killer.getName());
 			}else{
