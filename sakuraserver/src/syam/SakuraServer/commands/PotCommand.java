@@ -16,7 +16,7 @@ import syam.SakuraServer.SakuraServer;
 public class PotCommand implements CommandExecutor {
 	public final static Logger log = SakuraServer.log;
 	private static final String logPrefix = SakuraServer.logPrefix;
-	private static final String msgPrefix = SakuraServer.msgPerfix;
+	private static final String msgPrefix = SakuraServer.msgPrefix;
 
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args){
 		if (command.getName().equalsIgnoreCase("pot")){
@@ -46,8 +46,8 @@ public class PotCommand implements CommandExecutor {
 					int duration = 12000; // 仮:10分
 					int amplifier = 1;    // 仮:Lv1
 
-					// 支払い
-					double cost = Actions.potionPurchase((Player)sender, potion.getName());
+					double cost = Actions.potionMap.get(potion.getName());
+
 					if (args.length == 2){
 						try {
 							amplifier = Integer.parseInt(args[1]);
@@ -57,6 +57,10 @@ public class PotCommand implements CommandExecutor {
 							return true;
 						}
 					}
+
+					// 支払い
+					if (!Actions.potionPurchase((Player)sender, cost))
+						return true;
 
 					if (amplifier <= 0 || amplifier >= 11){
 						Actions.message(sender, player, "&cそのレベルは使えません！1～10の数を入力してください！");

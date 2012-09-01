@@ -54,12 +54,12 @@ import syam.util.NoteAlert;
 public class Actions {
 	public final static Logger log = SakuraServer.log;
 	private static final String logPrefix = SakuraServer.logPrefix;
-	private static final String msgPrefix = SakuraServer.msgPerfix;
+	private static final String msgPrefix = SakuraServer.msgPrefix;
 
 	/****************************************/
 	// 設定関係
 	/****************************************/
-	static ConcurrentHashMap<String, Double> potionMap = SakuraServer.potionMap;
+	public static ConcurrentHashMap<String, Double> potionMap = SakuraServer.potionMap;
 
 	public static Vault vault = null;
 	public static Economy economy = null;
@@ -106,12 +106,28 @@ public class Actions {
 	/* 所持金操作系関数 */
 	/****************************************/
 	/**
+	 * 指定したユーザーにお金を加える
+	 * @param name ユーザー名
+	 * @param amount 金額
+	 * @return 成功ならtrue、失敗ならfalse
+	 */
+	public static boolean addMoney(String name, double amount){
+		if (amount < 0) return false; // 負数は許容しない
+		EconomyResponse r = economy.depositPlayer(name, amount);
+		if(r.transactionSuccess()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	/**
 	 * 指定したユーザーからお金を引く
 	 * @param name ユーザー名
 	 * @param amount 金額
 	 * @return 成功ならtrue、失敗ならfalse
 	 */
 	public static boolean takeMoney(String name, double amount){
+		if (amount < 0) return false; // 負数は許容しない
 		EconomyResponse r = economy.withdrawPlayer(name, amount);
 		if(r.transactionSuccess()) {
 			return true;
@@ -272,7 +288,7 @@ public class Actions {
 		message(sender, null, "&fただし、必要なお金は1レベルあたりの値段です。");
 		message(sender, null, "&f3レベルの効果を買う場合は必要なお金も3倍になりますのでご注意ください。");
 		message(sender, null, "&d------ &f< 有効なPotリスト > &d------");
-		message(sender, null, " &bjump &f- &7ジャンプ力アップ(落下ダメージ注意！) &f- &b" + potionMap.get("JUMP").intValue() + " Coin");
+		//message(sender, null, " &bjump &f- &7ジャンプ力アップ(落下ダメージ注意！) &f- &b" + potionMap.get("JUMP").intValue() + " Coin");
 		message(sender, null, " &bspeed &f- &7移動速度アップ &f- &b" + potionMap.get("SPEED").intValue() + " Coin");
 		message(sender, null, " &bpoison &f- &7毒・x・ &f- &b" + potionMap.get("POISON").intValue() + " Coin");
 		message(sender, null, "&c===================================");
@@ -637,17 +653,16 @@ public class Actions {
 	 * @param potionName ポーション名
 	 * @return 支払い成功ならtrue, 失敗ならプレイヤーに通知後false
 	 */
-	public static double potionPurchase(Player player, String potionName){
-		double cost = potionMap.get(potionName);
+	public static boolean potionPurchase(Player player, double cost){
 		if (!checkMoney(player.getName(), cost)){
 			message(null, player, "&cお金が足りません！ " + (int)cost + "Coinが必要です！");
-			return -1;
+			return false;
 		}
 		if (!takeMoney(player.getName(), cost)){
 			message(null, player, "&c支払いにエラーが発生しました");
-			return -1;
+			return false;
 		}
-		return cost;
+		return true;
 	}
 	/**
 	 * ポーション効果付与
@@ -667,7 +682,8 @@ public class Actions {
 	 */
 	public static PotionEffectType validPotion(String potion){
 		if (potion.equalsIgnoreCase("jump"))
-			return PotionEffectType.JUMP;
+			return null;
+			// return PotionEffectType.JUMP; // 一時的に使用禁止
 		if (potion.equalsIgnoreCase("speed"))
 			return PotionEffectType.SPEED;
 		if (potion.equalsIgnoreCase("poison"))
@@ -957,6 +973,24 @@ public class Actions {
 
 		// 現行資源ワールドバージョンを設定
 		SakuraServer.playerData.get(player).setResourceSeed(currentResourceSeed);
+	}
+
+
+	/****************************************/
+	/* Util */
+	/****************************************/
+	/**
+	 * 文字列が整数型に変換できるか返す
+	 * @param str チェックする文字列
+	 * @return 変換成功ならtrue、失敗ならfalse
+	 */
+	public static boolean isInteger(String str) {
+		try{
+			Integer.parseInt(str);
+		}catch (NumberFormatException e){
+			return false;
+		}
+		return true;
 	}
 
 }
