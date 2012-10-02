@@ -53,13 +53,8 @@ public class SakuraBlockListener implements Listener {
 	/* 登録するイベントはここから下に */
 
 
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onStopLavaToObsidianInNether(BlockPhysicsEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
-
 		Block block = event.getBlock();
 		Material toMaterial = event.getChangedType();
 		if(block.getWorld().getEnvironment().equals(Environment.NETHER)){
@@ -70,12 +65,8 @@ public class SakuraBlockListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
 		Block block = event.getBlock();
 		Player player = event.getPlayer();
 
@@ -112,169 +103,8 @@ public class SakuraBlockListener implements Listener {
 		}
 	}
 
-	// ピストンが展開した
-	//@EventHandler(priority = EventPriority.NORMAL)
-	public void onBlockPistonExtend(BlockPistonExtendEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
-		Block block = event.getBlock();
-		BlockFace direction = event.getDirection();
-		Block headBlock = block.getRelative(direction, 1);
-
-		// 押した先のブロックが空気(0:AIR)の場合
-		if (headBlock.getType() == Material.AIR){
-			// 飛ばす強さ(Y軸方向のベクトル) 真下の看板によって変更されない場合はこの値
-			double flyVector = 3.0D;
-			// 横方向へ飛ばす強さ(XZ軸方向のベクトルへ掛ける) 変更されない場合は1.0倍
-			double sideMultiply = 1.0D;
-
-			// 落下死対策のジャンプポーション効果時間(sec)
-			int potionDurationInSec = 6;
-
-			// 例外ピストン用の看板チェック
-			// 真下に以下の看板があれば無効、または飛ばす強さを調整
-			BlockState checkBlock = block.getRelative(BlockFace.DOWN, 1).getState();
-			if (checkBlock instanceof Sign){
-				Sign sign = (Sign)checkBlock;
-
-				for (int i=0; i < 4; i++){
-					if(sign.getLine(i).trim().equalsIgnoreCase("飛ばない") ||
-					   sign.getLine(i).trim().equalsIgnoreCase("とばない") ||
-					   sign.getLine(i).trim().equalsIgnoreCase("Can't Fly") ||
-					   sign.getLine(i).trim().equalsIgnoreCase("Cant Fly") ||
-					   sign.getLine(i).trim().equalsIgnoreCase("Can not Fly") ||
-					   sign.getLine(i).trim().equalsIgnoreCase("Cannot Fly")){
-						return;
-					}
-					// flyVector はY軸方向のベクトル
-					// sideMultiply をXZ軸方向のベクトルに掛ける
-					if (i == 3) continue;
-					if (sign.getLine(i).trim().equalsIgnoreCase("[つよさ]") ||
-						sign.getLine(i).trim().equalsIgnoreCase("§1[つよさ]") ||
-						sign.getLine(i).trim().equalsIgnoreCase("[Power]")){
-						if (sign.getLine(i+1).trim().equalsIgnoreCase("つよい") ||
-							sign.getLine(i+1).trim().equalsIgnoreCase("High")){
-							flyVector = 4.0D;
-							sideMultiply = 1.5; // つよい→1.5倍
-							potionDurationInSec = 6;
-						}else if (sign.getLine(i+1).trim().equalsIgnoreCase("よわい") ||
-								  sign.getLine(i+1).trim().equalsIgnoreCase("Low")){
-							flyVector = 2.0D;
-							sideMultiply = 0.5; // よわい→0.5倍
-							potionDurationInSec = 4;
-						}else if (sign.getLine(i+1).trim().equalsIgnoreCase("ふつう") ||
-								  sign.getLine(i+1).trim().equalsIgnoreCase("Middle")){
-							flyVector = 3.0D;
-							sideMultiply = 1.0D; // ふつう→1.0倍(デフォルト)
-							potionDurationInSec = 5;
-						}else{
-							continue;
-						}
-						sign.setLine(i, "§1[つよさ]");
-						sign.update();
-					}
-				}
-			}
-
-			// 上向きのピストンの場合
-			if (direction == BlockFace.UP){
-				// add(0.5, 0.0, 0.5) は上向きの場合？
-				Location headBlockLoc = headBlock.getLocation().add(0.5, 0.0, 0.5);
-				// オンラインプレイヤーを走査
-				for (Player player : Bukkit.getServer().getOnlinePlayers()){
-					Location playerLoc = player.getLocation();
-
-					if (playerLoc.getWorld() != headBlockLoc.getWorld()){
-						continue;
-					}
-					// ピストンに押されたブロックの座標とプレイヤーの座標を計算
-					double distance = playerLoc.distance(headBlockLoc);
-					if (distance >= 1.0){
-						continue;
-					}
-
-					// プレイヤーのベクトルを初期値に
-					Vector dir = player.getVelocity();
-					Vector vect = new Vector(dir.getX() * 3.0D, flyVector, dir.getZ() * 3.0D);
-
-					// 上手く飛ぶようにプレイヤーを浮かす
-					player.teleport(playerLoc.add(0, 0.5, 0));
-					player.setVelocity(vect); // 飛ばす
-
-					// 落下死対策
-					if (player.hasPotionEffect(PotionEffectType.JUMP))
-						player.removePotionEffect(PotionEffectType.JUMP);
-					player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, potionDurationInSec * 20, 0));
-
-					Actions.message(null, player, "Fly!");
-				}
-			}
-
-			// 上と下向き以外のピストンの場合
-			if (direction != BlockFace.UP && direction != BlockFace.DOWN){
-				// TODO:後で調整する プレイヤーの座標とブロックの座標間計算の元になるブロック座標
-				Location headBlockLoc = headBlock.getLocation().add(0.5, 0.0, 0.5);
-
-				for (Player player : Bukkit.getServer().getOnlinePlayers()){
-					Location playerLoc = player.getLocation();
-
-					if (playerLoc.getWorld() != headBlockLoc.getWorld()){
-						continue;
-					}
-
-					double distance = playerLoc.distance(headBlockLoc);
-					if (distance >= 1.0){
-						continue;
-					}
-
-					Vector dir = player.getVelocity();
-
-					// ピストンの向きによって飛ばす方向を変える
-					// 元になるベクトル
-					Vector vect = null;
-
-					/* リファクタリング済み */
-
-					if (direction == BlockFace.EAST){
-						// 東向き→実際には北向き？ Z軸を負に
-						vect = new Vector(0.0D * sideMultiply, 0, -2.0D * sideMultiply);
-					}else if(direction == BlockFace.WEST){
-						// 西向き→実際には南 Z軸を正に
-						vect = new Vector(0.0D * sideMultiply, 0, 2.0D * sideMultiply);
-					}else if(direction == BlockFace.SOUTH){
-						// 南向き→東 X軸を正に
-						vect = new Vector(2.0D * sideMultiply, 0, 0.0D * sideMultiply);
-					}else if(direction == BlockFace.NORTH){
-						// 北向き→西 X軸を負に
-						vect = new Vector(-2.0D * sideMultiply, 0, 0.0D * sideMultiply);
-					}
-
-					// 上手く飛ぶように0.5ブロック浮かす
-					player.teleport(playerLoc.add(0, 0.5, 0));
-					player.setVelocity(vect); // 飛ばす
-
-					// 横向きは落下死対策しない
-					/*
-					if (player.hasPotionEffect(PotionEffectType.JUMP))
-						player.removePotionEffect(PotionEffectType.JUMP);
-					player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, potionDurationInSec * 20, 0));
-					*/
-
-					Actions.message(null, player, "Fly!");
-				}
-			}
-		}
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
-
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
 
@@ -299,7 +129,7 @@ public class SakuraBlockListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onBlockDamage(BlockDamageEvent event){
 		if (event.getBlock().getType() == Material.BEDROCK){
 			SakuraServer.bedrockConfig.put(event.getPlayer(), event.getBlock().getLocation());
@@ -307,15 +137,8 @@ public class SakuraBlockListener implements Listener {
 		}
 	}
 
-
-
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onSignChange(SignChangeEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
-
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
 		BlockState state = event.getBlock().getState();

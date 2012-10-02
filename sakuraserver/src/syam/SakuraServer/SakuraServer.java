@@ -42,7 +42,6 @@ import syam.SakuraServer.listener.SakuraBlockListener;
 import syam.SakuraServer.listener.SakuraEndListener;
 import syam.SakuraServer.listener.SakuraEntityListener;
 import syam.SakuraServer.listener.SakuraPlayerListener;
-import syam.SakuraServer.listener.SakuraWorldListener;
 import syam.util.Actions;
 import syam.util.TextFileHandler;
 
@@ -50,7 +49,6 @@ import com.google.common.collect.Lists;
 
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
-
 
 public class SakuraServer extends JavaPlugin{
 	public final static Logger log = Logger.getLogger("Minecraft");
@@ -62,7 +60,6 @@ public class SakuraServer extends JavaPlugin{
 	private final SakuraPlayerListener playerListener = new SakuraPlayerListener(this);
 	private final SakuraBlockListener blockListener = new SakuraBlockListener(this);
 	private final SakuraEntityListener entityListener = new SakuraEntityListener(this);
-	private final SakuraWorldListener worldListener = new SakuraWorldListener(this);
 	private final SakuraEndListener endListener = new SakuraEndListener(this);
 
 	private static SakuraServer instance;
@@ -185,7 +182,6 @@ public class SakuraServer extends JavaPlugin{
 		pm.registerEvents(blockListener, this);
 		pm.registerEvents(playerListener, this);
 		pm.registerEvents(entityListener, this);
-		pm.registerEvents(worldListener, this);
 		pm.registerEvents(endListener, this);
 
 		// コマンドを登録

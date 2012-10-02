@@ -67,7 +67,7 @@ public class SakuraEndListener implements Listener {
 	 * エンティティが死んだ
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onEntityDeath(EntityDeathEvent event){
 		// ドラゴン討伐メッセージ
 		if (event.getEntity().getType() == EntityType.ENDER_DRAGON && event.getEntity().getKiller() != null){
@@ -93,13 +93,8 @@ public class SakuraEndListener implements Listener {
 	 * エンティティがダメージを受けた
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
-
 		Entity ent = event.getEntity();
 
 		if (ent.getWorld() == Bukkit.getWorld("hard_end")){
@@ -200,26 +195,12 @@ public class SakuraEndListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onEntityDamageByBlock(EntityDamageByBlockEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
-		// do stuff
-	}
-
 	/**
 	 * エンティティがエンティティによってダメージを受けた
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
-
 		Entity ent = event.getEntity();
 		Entity attacker = event.getDamager();
 
@@ -288,12 +269,8 @@ public class SakuraEndListener implements Listener {
 	 * プレイヤーが右クリックした
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerInteract(PlayerInteractEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
 		Player player = event.getPlayer();
 
 		// ハードエンド強化ロジック
@@ -407,7 +384,7 @@ public class SakuraEndListener implements Listener {
 	 * 矢が何かに当たった
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onProjectileHit(ProjectileHitEvent event){
 		// ハードエンド強化
 		if (event.getEntity().getWorld() == Bukkit.getWorld("hard_end")){
@@ -424,14 +401,14 @@ public class SakuraEndListener implements Listener {
 	 * プレイヤーが死んだ
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerDeath(PlayerDeathEvent event){
 		if (event.getEntity().getWorld() == Bukkit.getWorld("hard_end")){
 			Player player = event.getEntity();
 		}
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerChangedWorld(PlayerChangedWorldEvent event){
 		Player player = event.getPlayer();
 		// ハードエンドに移動したら10秒間無敵
@@ -444,13 +421,8 @@ public class SakuraEndListener implements Listener {
 	 * プレイヤーがテレポートしようとした
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerTeleport(PlayerTeleportEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
-
 		Player player = event.getPlayer();
 		if(event.getTo().getWorld() == Bukkit.getWorld("new_the_end") || event.getTo().getWorld() == Bukkit.getWorld("hard_end")){
 			if(!player.hasPermission("sakuraserver.citizen")){
@@ -467,7 +439,7 @@ public class SakuraEndListener implements Listener {
 	 * エンティティによってポータルが作られた
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onEntityCreatePortal(EntityCreatePortalEvent event){
 		if(!event.getEntityType().equals(EntityType.ENDER_DRAGON)){
 			return;
@@ -479,12 +451,8 @@ public class SakuraEndListener implements Listener {
 	 * チャンクがアンロードされた
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onChunkUnload(ChunkUnloadEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
 		/* エンダーワールドでドラゴンが居るチャンクはアンロードしない */
 
 		// TheEndディメンション以外は無視

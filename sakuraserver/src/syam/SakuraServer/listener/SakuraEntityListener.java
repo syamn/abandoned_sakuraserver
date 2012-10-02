@@ -53,10 +53,9 @@ public class SakuraEntityListener implements Listener {
 	 * エンティティが死んだ
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onEntityDeath(EntityDeathEvent event){
 		LivingEntity livEnt = event.getEntity();
-
 
 		// 他人の動物を倒したら全員に警告表示
 		if ((event.getEntity().getType() == EntityType.OCELOT || event.getEntity().getType() == EntityType.WOLF) &&
@@ -100,13 +99,8 @@ public class SakuraEntityListener implements Listener {
 	 * @param event
 	 */
 	@SuppressWarnings("unused")
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
-
 		Entity ent = event.getEntity();
 		Entity damager = event.getDamager();
 
@@ -228,7 +222,7 @@ public class SakuraEntityListener implements Listener {
 	 * 敵モンスターに乗っているとき、乗っているモンスターのターゲットにしない
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void targetCancelOnRideMonster(EntityTargetLivingEntityEvent event){
 		// ターゲットがプレイヤーでなければリターン
 		if (!(event.getTarget() instanceof Player)){
@@ -249,7 +243,7 @@ public class SakuraEntityListener implements Listener {
 	 * 金の装備を身につけている時はターゲッティングイベントをキャンセル
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void targetCancelOnGoldEquipment(EntityTargetLivingEntityEvent event){
 		Entity ent = event.getEntity();
 		LivingEntity targetEnt = event.getTarget();
@@ -299,7 +293,7 @@ public class SakuraEntityListener implements Listener {
 	 * プレイヤーが死んだ
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerDeath(PlayerDeathEvent event){
 		Player deader = event.getEntity();
 
@@ -340,14 +334,8 @@ public class SakuraEntityListener implements Listener {
 		}
 	}
 
-
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onEntityCreatePortal(EntityCreatePortalEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
-
 		// ネザーポータルをプレイヤーが作った
 		if(event.getEntityType() == EntityType.PLAYER){
 			log.info("player");

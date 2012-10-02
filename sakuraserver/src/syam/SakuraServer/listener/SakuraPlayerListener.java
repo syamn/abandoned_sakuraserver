@@ -65,7 +65,7 @@ public class SakuraPlayerListener implements Listener {
 	 * プレイヤーがゲームに参加した
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onPlayerJoin(PlayerJoinEvent event){
 		final Player player = event.getPlayer();
 		// Tabリスト色変更
@@ -96,7 +96,7 @@ public class SakuraPlayerListener implements Listener {
 	 * プレイヤーがゲームから離脱した
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerQuit(PlayerQuitEvent event){
 		Player player = event.getPlayer();
 		if(SakuraServer.playerData.containsKey(player)){
@@ -116,7 +116,7 @@ public class SakuraPlayerListener implements Listener {
 	 * プレイヤーのワールドが変わった
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPlayerChangedWorld(PlayerChangedWorldEvent event){
 		Player player = event.getPlayer();
 		// エンド進入時にメッセージ表示
@@ -160,12 +160,8 @@ public class SakuraPlayerListener implements Listener {
 	 * @param event
 	 */
 	@SuppressWarnings("unused")
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerInteract(PlayerInteractEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
 		Player player = event.getPlayer();
 		Block block = null;
 		if (event.hasBlock()){
@@ -239,33 +235,14 @@ public class SakuraPlayerListener implements Listener {
 	 * プレイヤーがテレポートした
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerTeleport(PlayerTeleportEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
-
 		// もし他のプレイヤーが上に乗っていれば降ろす
 		Player player = event.getPlayer();
 		if (player.getPassenger() != null &&
 				(player.getPassenger() instanceof Player)){
 			player.eject();
 		}
-	}
-
-
-	public void onPlayerRespawn(PlayerRespawnEvent event){
-
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerAnimation(PlayerAnimationEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
-
 	}
 
 	/**
@@ -319,10 +296,12 @@ public class SakuraPlayerListener implements Listener {
 
 			Actions.message(null, player, "&c Touch Diamond block!");
 
-			//音を鳴らす
+			//音を鳴らす バージョンアップで使用不能に
+			/*
 			List<Note> notes = new ArrayList<Note>();
 			notes.add(new Note(20));
 			Actions.playNote(player, notes, 0L);
+			*/
 
 			Vector dir = diffLoc.getDirection();
 			Vector vect = new Vector((-(dir.getX())) * 5.0D, 2.0D, (-(dir.getZ())) * 5.0D);
@@ -335,20 +314,14 @@ public class SakuraPlayerListener implements Listener {
 	 * プレイヤーがキックされた
 	 * @param event
 	 */
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerKick(PlayerKickEvent event){
-		// ここには何も書かない
-		if (event.isCancelled()){
-			return;
-		}
 		Player player = event.getPlayer();
 		String reason = event.getReason();
-
 
 		String newMessage = msgPrefix+"&6"+player.getDisplayName()+" &aはKickされました: "+event.getReason();
 		newMessage = newMessage.replaceAll("&([0-9a-fk-or])", "\u00A7$1");
 
 		event.setLeaveMessage(newMessage);
 	}
-
 }
