@@ -14,9 +14,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
-import syam.SakuraServer.Actions;
 import syam.SakuraServer.SakuraPlayer;
 import syam.SakuraServer.SakuraServer;
+import syam.util.Actions;
 
 public class MiscCommand implements CommandExecutor {
 	public final static Logger log = SakuraServer.log;

@@ -8,8 +8,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import syam.SakuraServer.Actions;
 import syam.SakuraServer.SakuraServer;
+import syam.util.Actions;
 
 public class SakuraCommand implements CommandExecutor {
 	public final static Logger log = SakuraServer.log;

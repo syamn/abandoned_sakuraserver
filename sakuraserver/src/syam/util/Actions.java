@@ -1,4 +1,4 @@
-package syam.SakuraServer;
+package syam.util;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -48,8 +48,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import syam.util.TextFileHandler;
-import syam.util.NoteAlert;
+import syam.SakuraServer.SakuraPlayer;
+import syam.SakuraServer.SakuraServer;
 
 public class Actions {
 	public final static Logger log = SakuraServer.log;
@@ -698,7 +698,7 @@ public class Actions {
 	 * ログイン時に自動で飛行状態にする
 	 * @param player プレイヤー
 	 */
-	static void joinAutoFlyPlayer(Player player){
+	public static void joinAutoFlyPlayer(Player player){
 		if(!SakuraServer.flyingPlayerList.contains(player.getName())){
 			return;
 		}
@@ -763,7 +763,7 @@ public class Actions {
 	/**
 	 * プレイヤーの飛行時間期限切れチェック
 	 */
-	static void checkExpireFlyPlayer(){
+	public static void checkExpireFlyPlayer(){
 		for (int i = 0; i < SakuraServer.flyingPlayerList.size(); i++) {
 			String name = SakuraServer.flyingPlayerList.get(i);
 
@@ -813,7 +813,7 @@ public class Actions {
 	/**
 	 * プラグインがロードされた時に以前の飛行モードプレイヤーをリストア
 	 */
-	static void restoreFlyPlayer(){
+	public static void restoreFlyPlayer(){
 		int size = SakuraServer.flyingPlayerList.size();
 		if (size==0){
 			return; // 復元対象プレイヤーナシ
@@ -900,7 +900,7 @@ public class Actions {
 		}
 	}
 	// スタッフメンバー、ビジターの色をログイン時に自動変更
-	static void changeTabNameDefault(String name){
+	public static void changeTabNameDefault(String name){
 		Player player = Bukkit.getServer().getPlayerExact(name);
 		String prefix = null;
 
@@ -949,7 +949,7 @@ public class Actions {
 	/* 資源ワールドチェック */
 	/****************************************/
 	// ログイン時に資源ワールドが新しいものかチェック
-	static void checkResourceWorld(Player player){
+	public static void checkResourceWorld(Player player){
 		// 資源ワールドが存在しなければ(ちょうど更新中なら)メッセージだけ表示して何もしない
 		if (Bukkit.getWorld("resource") == null){
 			Actions.message(null, player,msgPrefix+"現在資源ワールドはリセット作業中です！");

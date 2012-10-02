@@ -16,8 +16,8 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import syam.SakuraServer.Actions;
 import syam.SakuraServer.SakuraServer;
+import syam.util.Actions;
 
 public class AdminCommand implements CommandExecutor {
 	public final static Logger log = SakuraServer.log;

@@ -1,4 +1,4 @@
-package syam.SakuraServer;
+package syam.SakuraServer.listener;
 
 import java.util.logging.Logger;
 
@@ -10,6 +10,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkUnloadEvent;
+
+import syam.SakuraServer.SakuraServer;
 
 public class SakuraWorldListener implements Listener {
 	public final static Logger log = SakuraServer.log;

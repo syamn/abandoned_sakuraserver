@@ -10,8 +10,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
-import syam.SakuraServer.Actions;
 import syam.SakuraServer.SakuraServer;
+import syam.util.Actions;
 
 public class PotCommand implements CommandExecutor {
 	public final static Logger log = SakuraServer.log;
