@@ -993,4 +993,8 @@ public class Actions {
 		return true;
 	}
 
+	public static String coloring(String message){
+		return message.replaceAll("&([0-9a-fk-or])", "\u00A7$1");
+	}
+
 }

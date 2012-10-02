@@ -38,6 +38,26 @@ commands:
       usage: /syamn - too see the info
       aliases: [syam, しゃむ]
       description: See the admin info
+    colors:
+      usage: /colors - too see the info
+      aliases: [col]
+      description: See colors info
+    mfmf:
+      usage: /mfmf - too see the info
+      aliases: [もふもふ]
+      description: See colors info
+    flagworld:
+      usage: /flagworld - too see the info
+      aliases: [fw]
+      description: Tp flaggame world with Creative
+    "yes":
+      usage: /yes
+      aliases: [yes]
+      description: Yes/No
+    "no":
+      usage: /no
+      aliases: [no]
+      description: Yes/No
 permissions:
     sakuraserver.admin:
         default: op

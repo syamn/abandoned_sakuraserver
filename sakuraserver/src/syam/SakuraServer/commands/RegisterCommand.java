@@ -21,7 +21,7 @@ import syam.util.Encrypter;
 public class RegisterCommand implements CommandExecutor {
 	public final static Logger log = SakuraServer.log;
 	private static final String logPrefix = SakuraServer.logPrefix;
-	private static final String msgPrefix = SakuraServer.msgPerfix;
+	private static final String msgPrefix = SakuraServer.msgPrefix;
 
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args){
 		if (command.getName().equalsIgnoreCase("register")){

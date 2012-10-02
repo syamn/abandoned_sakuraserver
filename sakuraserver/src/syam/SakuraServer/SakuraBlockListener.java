@@ -39,7 +39,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 public class SakuraBlockListener implements Listener {
 	public final static Logger log = SakuraServer.log;
 	private static final String logPrefix = SakuraServer.logPrefix;
-	private static final String msgPrefix = SakuraServer.msgPerfix;
+	private static final String msgPrefix = SakuraServer.msgPrefix;
 
 	private final SakuraServer plugin;
 
@@ -85,7 +85,7 @@ public class SakuraBlockListener implements Listener {
 	}
 
 	// レッドストーン鉱石を壊した
-	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	//@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true) //debug TODO:一時的に無効 1.3.1
 	public void onRedstoneOreBreak(BlockBreakEvent event){
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
@@ -104,13 +104,13 @@ public class SakuraBlockListener implements Listener {
 
 		// 爆発させる
 		if (ran < 10){ // 0-19 → 20%
-			player.setNoDamageTicks(40); // 爆発時にダメージを受けないよう2秒間無敵
+			//player.setNoDamageTicks(40); // 爆発時にダメージを受けないよう2秒間無敵
 			block.getWorld().createExplosion(block.getLocation(), (float) 1.0, false);
 		}
 	}
 
 	// ピストンが展開した
-	@EventHandler(priority = EventPriority.NORMAL)
+	//@EventHandler(priority = EventPriority.NORMAL)
 	public void onBlockPistonExtend(BlockPistonExtendEvent event){
 		// ここには何も書かない
 		if (event.isCancelled()){

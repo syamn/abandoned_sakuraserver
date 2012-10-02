@@ -2,6 +2,8 @@ package syam.SakuraServer.commands;
 
 import java.util.logging.Logger;
 
+import net.minecraft.server.Packet201PlayerInfo;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -10,6 +12,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,7 +22,7 @@ import syam.SakuraServer.SakuraServer;
 public class AdminCommand implements CommandExecutor {
 	public final static Logger log = SakuraServer.log;
 	private static final String logPrefix = SakuraServer.logPrefix;
-	private static final String msgPrefix = SakuraServer.msgPerfix;
+	private static final String msgPrefix = SakuraServer.msgPrefix;
 
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args){
 		if (command.getName().equalsIgnoreCase("admin")){
@@ -187,6 +190,64 @@ public class AdminCommand implements CommandExecutor {
 				}else{
 					Actions.message(sender, null, "&cその色はデータにありません！");
 				}
+				return true;
+			}
+
+			// TabListの表示名追加
+			if (args.length >= 2 && args[0].equalsIgnoreCase("add")){
+				if (!sender.hasPermission("sakuraserver.admin")){
+					Actions.message(sender, null, "&cこのコマンドを実行する権限がありません");
+					return true;
+				}
+
+				String addName = Actions.coloring(args[1]);
+
+				if (SakuraServer.fakeJoinedPlayerList.contains(addName)){
+					Actions.message(sender, null, "&aそのプレイヤーは既に追加されていますが、追加パケットを再送信します");
+				}else{
+					SakuraServer.fakeJoinedPlayerList.add(addName);
+				}
+
+				if (addName.length() > 16){
+					Actions.message(sender, null, "&cプレイヤーリスト名は16文字以上にできません！");
+					return true;
+				}
+
+				for (Player player : Bukkit.getServer().getOnlinePlayers()){
+					((CraftPlayer)player).getHandle().netServerHandler.sendPacket(new Packet201PlayerInfo(addName, true, ((CraftPlayer)player).getHandle().ping));
+				}
+
+				Actions.message(sender, null, "&a'"+addName+"&a'をTabリストに追加しました");
+
+				return true;
+			}
+
+			// TabListの表示名削除
+			if (args.length >= 2 && args[0].equalsIgnoreCase("remove")){
+				if (!sender.hasPermission("sakuraserver.admin")){
+					Actions.message(sender, null, "&cこのコマンドを実行する権限がありません");
+					return true;
+				}
+
+				String removeName = Actions.coloring(args[1]);
+
+				if (SakuraServer.fakeJoinedPlayerList.contains(removeName)){
+					SakuraServer.fakeJoinedPlayerList.remove(removeName);
+				}else{
+					Actions.message(sender, null, "&aそのプレイヤーは追加されていませんが、削除パケットを送信します");
+				}
+
+				if (removeName.length() > 16){
+					Actions.message(sender, null, "&cプレイヤーリスト名は16文字以上にできません！");
+					return true;
+				}
+
+				for (Player player : Bukkit.getServer().getOnlinePlayers()){
+					((CraftPlayer)player).getHandle().netServerHandler.sendPacket(new Packet201PlayerInfo(removeName, false, 9999));
+				}
+
+				Actions.message(sender, null, "&a'"+removeName+"&a'をTabリストから削除しました");
+
 				return true;
 			}
 

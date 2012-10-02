@@ -50,6 +50,11 @@ public class SakuraPlayer {
 	 */
 	private long resourceSeed = 0;
 
+	// もふもふ関係
+	private int mofDate = 0;
+	private int mofCount = 0;
+
+
 	public SakuraPlayer(String name){
 		this.playerName = name;
 		String filename = SakuraServer.getInstance().getDataFolder() + System.getProperty("file.separator") +
@@ -77,13 +82,15 @@ public class SakuraPlayer {
 		try{
 			configurationFile.load(file);
 
-			// 読むデータキーをここに
+			// 読むデータキーをここに 見つからないキーは単に無視される
 			lastKillerName = configurationFile.getString("lastKillerName", null);
 			SimpleDateFormat sdf = new SimpleDateFormat(DATE_PATTERN);
 			if (configurationFile.getString("flyLimitDate") != null){
 				flyLimitDate = sdf.parse(configurationFile.getString("flyLimitDate"));
 			}
 			resourceSeed = configurationFile.getLong("resourceSeed", 0);
+
+			mofCount = configurationFile.getInt("mofCount", 0);
 
 		}catch (Exception e){
 			e.printStackTrace();
@@ -110,6 +117,8 @@ public class SakuraPlayer {
 				}
 
 				configurationFile.set("resourceSeed", resourceSeed);
+
+				configurationFile.set("mofCount", mofCount);
 
 				// 保存
 				configurationFile.save(file);
@@ -180,4 +189,18 @@ public class SakuraPlayer {
 	public long getResourceSeed(){
 		return resourceSeed;
 	}
+
+	public int getmfmfCount(){
+		return mofCount;
+	}
+	public int addMofCount(){
+		saved = false;
+		mofCount = mofCount + 1;
+		return mofCount;
+	}
+	public void resetMofCount(){
+		saved = false;
+		mofCount = 0;
+	}
+
 }

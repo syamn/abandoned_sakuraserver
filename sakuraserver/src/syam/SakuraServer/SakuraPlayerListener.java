@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import net.minecraft.server.Packet201PlayerInfo;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -16,6 +18,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
@@ -24,6 +27,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerAnimationEvent;
+import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -41,7 +45,7 @@ import org.bukkit.util.Vector;
 public class SakuraPlayerListener implements Listener {
 	public final static Logger log = SakuraServer.log;
 	private static final String logPrefix = SakuraServer.logPrefix;
-	private static final String msgPrefix = SakuraServer.msgPerfix;
+	private static final String msgPrefix = SakuraServer.msgPrefix;
 
 	private final SakuraServer plugin;
 
@@ -63,6 +67,11 @@ public class SakuraPlayerListener implements Listener {
 		// Tabリスト色変更
 		Actions.changeTabNameDefault(player.getName());
 
+		// Tabリスト追加
+		for (String addName : SakuraServer.fakeJoinedPlayerList){
+			((CraftPlayer)player).getHandle().netServerHandler.sendPacket(new Packet201PlayerInfo(addName, true, ((CraftPlayer)player).getHandle().ping));
+		}
+
 		// メモリマッピング
 		SakuraPlayer sakuraPlayer = new SakuraPlayer(player.getName());
 		SakuraServer.playerData.put(player, sakuraPlayer);
@@ -77,9 +86,7 @@ public class SakuraPlayerListener implements Listener {
 				Actions.checkResourceWorld(player);
 			}
 		}, 0L);
-
 	}
-
 
 	/**
 	 * プレイヤーがゲームから離脱した
@@ -92,13 +99,20 @@ public class SakuraPlayerListener implements Listener {
 			SakuraServer.playerData.get(player).save();
 			SakuraServer.playerData.remove(player);
 		}
+
+		// 基本的にログアウト移動時にはAdmin以外クリエイティブを外す
+		if (player.getGameMode() == GameMode.CREATIVE){
+			if (!player.hasPermission("sakuraserver.admin")){
+				player.setGameMode(GameMode.SURVIVAL);
+			}
+		}
 	}
 
 	/**
 	 * プレイヤーのワールドが変わった
 	 * @param event
 	 */
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChangedWorld(PlayerChangedWorldEvent event){
 		Player player = event.getPlayer();
 		// エンド進入時にメッセージ表示
@@ -126,6 +140,13 @@ public class SakuraPlayerListener implements Listener {
 			// 他のワールドなら飛行モード解除
 			if(player.getGameMode() != GameMode.CREATIVE){
 				player.setAllowFlight(false);
+			}
+		}
+
+		// 基本的にワールド移動時にはAdmin以外クリエイティブを外す
+		if (player.getGameMode() == GameMode.CREATIVE){
+			if (!player.hasPermission("sakuraserver.admin")){
+				player.setGameMode(GameMode.SURVIVAL);
 			}
 		}
 	}
@@ -325,4 +346,5 @@ public class SakuraPlayerListener implements Listener {
 
 		event.setLeaveMessage(newMessage);
 	}
+
 }

@@ -49,7 +49,7 @@ import net.milkbowl.vault.economy.Economy;
 public class SakuraServer extends JavaPlugin{
 	public final static Logger log = Logger.getLogger("Minecraft");
 	public final static String logPrefix = "[SakuraServer] ";
-	public final static String msgPerfix = "&c[SakuraServer] &f";
+	public final static String msgPrefix = "&c[SakuraServer] &f";
 
 	public static String logDir;
 
@@ -84,6 +84,12 @@ public class SakuraServer extends JavaPlugin{
 	// 飛行モードが有効なプレイヤーリスト
 	public static ArrayList<String> flyingPlayerList = new ArrayList<String>();
 
+	// FakeJoined タブリストプレイヤーリスト
+	public static ArrayList<String> fakeJoinedPlayerList = new ArrayList<String>();
+
+	// FakeJoined タブリストプレイヤーリスト
+	public static ArrayList<String> bedTiedPlayerList = new ArrayList<String>();
+
 	/*
 	public static ConcurrentHashMap<String, ConcurrentHashMap<Integer, Double>> potionMap2 = new ConcurrentHashMap<String, ConcurrentHashMap<Integer, Double>>();
 	public static ConcurrentHashMap<Integer, Double> jumpPotionMap = new ConcurrentHashMap<Integer, Double>();
@@ -94,6 +100,12 @@ public class SakuraServer extends JavaPlugin{
 	public void onDisable(){
 		// タイマーストップ
 		timer.stop();
+
+		// アンロード時に保存されていないプレイヤーデータは保存する
+		for (SakuraPlayer sp : playerData.values()){
+			// if (!sp.isSaved()) // save関数内でチェックを行うため不要
+			sp.save();
+		}
 
 		if(!flyingPlayerList.isEmpty()){
 			this.getConfig().set("FlyingPlayers", flyingPlayerList);
@@ -110,7 +122,7 @@ public class SakuraServer extends JavaPlugin{
 				Player player = offlinePlayer.getPlayer();
 				// オンラインなら飛行状態を解除
 				Actions.expireFlyPlayer(player);
-				Actions.message(null, player, msgPerfix+"プラグインがアンロードされるため飛行状態が解除されました");
+				Actions.message(null, player, msgPrefix+"プラグインがアンロードされるため飛行状態が解除されました");
 				Actions.log("FlyMode.log", "Player " + player.getName() + " is disabled flying mode because unloading plugin.");
 			}else{
 				Actions.log("FlyMode.log", "(Offline)Player " + offlinePlayer.getName() + " is disabled flying mode because unloading plugin.");
@@ -216,8 +228,6 @@ public class SakuraServer extends JavaPlugin{
 		dbm = new SakuraMySqlManager();
 
 		if(!dbm.init()){
-			Actions.message(null, Bukkit.getPlayer("biohuns"), "640x480なう");
-
 			log.severe(logPrefix+"データベースの接続を初期化できませんでした");
 			getServer().getPluginManager().disablePlugin(this);
 			return;

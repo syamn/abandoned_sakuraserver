@@ -35,7 +35,7 @@ import org.bukkit.inventory.PlayerInventory;
 public class SakuraEntityListener implements Listener {
 	public final static Logger log = SakuraServer.log;
 	private static final String logPrefix = SakuraServer.logPrefix;
-	private static final String msgPrefix = SakuraServer.msgPerfix;
+	private static final String msgPrefix = SakuraServer.msgPrefix;
 
 	private final SakuraServer plugin;
 
@@ -312,7 +312,13 @@ public class SakuraEntityListener implements Listener {
 			}
 
 			// ゲームワールド例外
-			if (deader.getWorld() == Bukkit.getWorld("flag")){
+			if (Bukkit.getWorld("flag") != null && deader.getWorld() == Bukkit.getWorld("flag")){
+				return;
+			}
+			if (Bukkit.getWorld("flaggame") != null && deader.getWorld() == Bukkit.getWorld("flaggame")){
+				return;
+			}
+			if (Bukkit.getWorld("race") != null && deader.getWorld() == Bukkit.getWorld("race")){
 				return;
 			}
 

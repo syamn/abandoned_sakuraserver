@@ -14,7 +14,7 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 public class SakuraWorldListener implements Listener {
 	public final static Logger log = SakuraServer.log;
 	private static final String logPrefix = SakuraServer.logPrefix;
-	private static final String msgPrefix = SakuraServer.msgPerfix;
+	private static final String msgPrefix = SakuraServer.msgPrefix;
 
 	private final SakuraServer plugin;
 

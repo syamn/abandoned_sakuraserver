@@ -17,7 +17,7 @@ import syam.SakuraServer.commands.SakuraCommand;
 public class SakuraCommandRegister {
 	public final static Logger log = SakuraServer.log;
 	private static final String logPrefix = SakuraServer.logPrefix;
-	private static final String msgPrefix = SakuraServer.msgPerfix;
+	private static final String msgPrefix = SakuraServer.msgPrefix;
 
 	public static SakuraServer plugin;
 
@@ -29,7 +29,14 @@ public class SakuraCommandRegister {
 		registerCommand("password", new PasswordCommand());
 		registerCommand("pot", new PotCommand());
 		registerCommand("sakura", new SakuraCommand());
-		registerCommand("syamn", new MiscCommand());
+
+		CommandExecutor miscExec = new MiscCommand();
+		registerCommand("syamn", miscExec);
+		registerCommand("colors", miscExec);
+		registerCommand("mfmf", miscExec);
+		registerCommand("yes", miscExec);
+		registerCommand("no", miscExec);
+
 		log.info(logPrefix+"Initialized Commands.");
 	}
 	public static void registerCommand(String command, CommandExecutor executor){
