@@ -5,13 +5,13 @@ import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 
-import syam.SakuraServer.commands.AdminCommand;
-import syam.SakuraServer.commands.FlymodeCommand;
-import syam.SakuraServer.commands.MiscCommand;
-import syam.SakuraServer.commands.PasswordCommand;
-import syam.SakuraServer.commands.PotCommand;
-import syam.SakuraServer.commands.RegisterCommand;
-import syam.SakuraServer.commands.SakuraCommand;
+import syam.SakuraServer.oldcommands.AdminCommand;
+import syam.SakuraServer.oldcommands.FlymodeCommand;
+import syam.SakuraServer.oldcommands.MiscCommand;
+import syam.SakuraServer.oldcommands.PasswordCommand;
+import syam.SakuraServer.oldcommands.PotCommand;
+import syam.SakuraServer.oldcommands.RegisterCommand;
+import syam.SakuraServer.oldcommands.SakuraCommand;
 
 
 public class SakuraCommandRegister {

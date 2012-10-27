@@ -37,11 +37,11 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
 
-import syam.SakuraServer.commands.*;
 import syam.SakuraServer.listener.SakuraBlockListener;
 import syam.SakuraServer.listener.SakuraEndListener;
 import syam.SakuraServer.listener.SakuraEntityListener;
 import syam.SakuraServer.listener.SakuraPlayerListener;
+import syam.SakuraServer.oldcommands.*;
 import syam.util.Actions;
 import syam.util.TextFileHandler;
 

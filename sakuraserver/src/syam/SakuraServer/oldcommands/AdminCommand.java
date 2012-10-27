@@ -1,4 +1,4 @@
-package syam.SakuraServer.commands;
+package syam.SakuraServer.oldcommands;
 
 import java.util.logging.Logger;
 
