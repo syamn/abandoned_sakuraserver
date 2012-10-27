@@ -77,12 +77,14 @@ public class SakuraEndListener implements Listener {
 
 			if(event.getEntity().getWorld() == Bukkit.getWorld("new_the_end")){
 				event.setDroppedExp(normal_end_DragonExp); // ノーマルエンドドラゴン経験値設定
-				Actions.broadcastMessage(msgPrefix + event.getEntity().getKiller().getName() + " さんがドラゴンを倒しました！");
-				Actions.broadcastMessage("&aエンドワールドは全員が退出してから3時間後に自動再生成されます！");
-			}else if(event.getEntity().getWorld() == Bukkit.getWorld("hard_end")){
+				Actions.broadcastMessage(msgPrefix + "&6"+ event.getEntity().getKiller().getName() + " &bさんがドラゴンを倒しました！");
+				Actions.broadcastMessage("&aエンドワールドは6時間後に自動再生成されます！");
+				Actions.worldcastMessage(event.getEntity().getWorld(), "&aメインワールドに戻るには&f /spawn &aコマンドを使ってください！");
+			}
+			else if(event.getEntity().getWorld() == Bukkit.getWorld("hard_end")){
 				event.setDroppedExp(hard_end_DragonExp); // ハードエンドドラゴン経験値設定
-				Actions.broadcastMessage(msgPrefix + event.getEntity().getKiller().getName() + " さんがハードエンドでドラゴンを倒しました！");
-				Actions.broadcastMessage("&aメインワールドに戻るには&f /spawn &aコマンドを使ってください！");
+				Actions.broadcastMessage(msgPrefix + "&6" + event.getEntity().getKiller().getName() + " &bさんがハードエンドでドラゴンを倒しました！");
+				Actions.worldcastMessage(event.getEntity().getWorld(), "&aメインワールドに戻るには&f /spawn &aコマンドを使ってください！");
 			}
 
 			Actions.log("End.log", "Player " + event.getEntity().getKiller().getName() + " killed the EnderDragon at world " + event.getEntity().getWorld().getName());
