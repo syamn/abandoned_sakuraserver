@@ -1,6 +1,6 @@
 ##  Plugin Information  ##
 name: SakuraServer
-version: 2.10
+version: 2.20
 main: syam.SakuraServer.SakuraServer
 description: SakuraServer Plugin!
 website: http://sakura-server.net/
@@ -46,18 +46,6 @@ commands:
       usage: /mfmf - too see the info
       aliases: [もふもふ]
       description: See colors info
-    flagworld:
-      usage: /flagworld - too see the info
-      aliases: [fw]
-      description: Tp flaggame world with Creative
-    "yes":
-      usage: /yes
-      aliases: [yes]
-      description: Yes/No
-    "no":
-      usage: /no
-      aliases: [no]
-      description: Yes/No
 permissions:
     sakuraserver.admin:
         default: op

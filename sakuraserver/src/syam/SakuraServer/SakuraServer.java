@@ -1,5 +1,7 @@
 package syam.SakuraServer;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -7,48 +9,48 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.persistence.PersistenceException;
 import javax.swing.Timer;
 
+import net.milkbowl.vault.Vault;
+import net.milkbowl.vault.economy.Economy;
+
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.MemorySection;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffectType;
 
+import syam.SakuraServer.commands.BaseCommand;
+import syam.SakuraServer.commands.CommandAdmin;
+import syam.SakuraServer.commands.CommandColors;
+import syam.SakuraServer.commands.CommandFlymode;
+import syam.SakuraServer.commands.CommandJailapply;
+import syam.SakuraServer.commands.CommandMfmf;
+import syam.SakuraServer.commands.CommandPassword;
+import syam.SakuraServer.commands.CommandPot;
+import syam.SakuraServer.commands.CommandRegister;
+import syam.SakuraServer.commands.CommandSakura;
+import syam.SakuraServer.commands.CommandSyamn;
+import syam.SakuraServer.commands.SakuraCommandHandler;
 import syam.SakuraServer.listener.SakuraBlockListener;
 import syam.SakuraServer.listener.SakuraEndListener;
 import syam.SakuraServer.listener.SakuraEntityListener;
 import syam.SakuraServer.listener.SakuraPlayerListener;
-import syam.SakuraServer.oldcommands.*;
 import syam.util.Actions;
-import syam.util.TextFileHandler;
-
-import com.google.common.collect.Lists;
-
-import net.milkbowl.vault.Vault;
-import net.milkbowl.vault.economy.Economy;
 
 public class SakuraServer extends JavaPlugin{
 	public final static Logger log = Logger.getLogger("Minecraft");
@@ -74,6 +76,10 @@ public class SakuraServer extends JavaPlugin{
 
 	// データベース
 	public static SakuraMySqlManager dbm;
+
+	// コマンド
+	private SakuraCommandHandler commandHandler = null;
+	private Map<String, BaseCommand> commands = new HashMap<String, BaseCommand>();
 
 	// 設定関係
 	public static ConcurrentHashMap<String, Double> potionMap = new ConcurrentHashMap<String,Double>();
@@ -185,7 +191,9 @@ public class SakuraServer extends JavaPlugin{
 		pm.registerEvents(endListener, this);
 
 		// コマンドを登録
-		SakuraCommandRegister.registerCommands();
+		//SakuraCommandRegister.registerCommands();
+		commandHandler = new SakuraCommandHandler(this);
+		registerCommands();
 
 		// タイマースタート
 		timer = new Timer(1000, action);
@@ -222,6 +230,36 @@ public class SakuraServer extends JavaPlugin{
 			// Do stuff..
 		}
 	};
+
+	private void registerCommands(){
+		// general
+		commandHandler.registerCommand(new CommandFlymode());
+		commandHandler.registerCommand(new CommandPot());
+		commandHandler.registerCommand(new CommandJailapply());
+
+		// web
+		commandHandler.registerCommand(new CommandPassword());
+		commandHandler.registerCommand(new CommandRegister());
+
+		// multi
+		commandHandler.registerCommand(new CommandSakura());
+		commandHandler.registerCommand(new CommandAdmin());
+
+		// misc
+		commandHandler.registerCommand(new CommandMfmf());
+		commandHandler.registerCommand(new CommandColors());
+		commandHandler.registerCommand(new CommandSyamn());
+	}
+
+	@Override
+	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args){
+		return commandHandler.onCommand(sender, command, label, args);
+	}
+
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args){
+		return commandHandler.onTabComplete(sender, command, alias, args);
+	}
 
 	/**
 	 * データベースのセットアップ

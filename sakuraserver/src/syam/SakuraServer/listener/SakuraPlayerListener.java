@@ -3,6 +3,7 @@ package syam.SakuraServer.listener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import net.minecraft.server.Packet201PlayerInfo;
@@ -19,6 +20,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
@@ -26,10 +29,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -323,5 +328,33 @@ public class SakuraPlayerListener implements Listener {
 		newMessage = newMessage.replaceAll("&([0-9a-fk-or])", "\u00A7$1");
 
 		event.setLeaveMessage(newMessage);
+	}
+
+	/**
+	 * 手持ちのアイテムが替わった No ignoreCancel(無視しない)
+	 * @param event
+	 */
+	@EventHandler(priority = EventPriority.LOW)
+	public void onInventoryClick(final InventoryClickEvent event){
+		final ItemStack item = event.getCurrentItem();
+		if (item == null) return;
+
+		switch (item.getType()){
+			case MOB_SPAWNER:
+			case MONSTER_EGG:
+				boolean flag = false;
+				for (final Enchantment e : item.getEnchantments().keySet()){
+					item.removeEnchantment(e);
+					flag = true;
+				}
+				if (flag){
+					Player player = (Player) event.getWhoClicked();
+					log.info(logPrefix+ "Player " + player.getName() + " clicked item has invalid enchant! Removed! item: " + item.getType().name());
+					Actions.message(null, player, "&cクリックしたアイテムの不正なエンチャントを削除しました！");
+				}
+				break;
+			default:
+				break;
+		}
 	}
 }

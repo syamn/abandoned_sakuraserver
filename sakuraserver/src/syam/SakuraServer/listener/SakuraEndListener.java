@@ -330,10 +330,12 @@ public class SakuraEndListener implements Listener {
 					event.setRadius((float) 9.0);
 					event.setFire(true);
 					break;
+				/* TODO:Breaking 1.4.2
 				case FIREBALL: // ガストの火の玉
 					event.setRadius((float) 3.0);
 					event.setFire(true);
 					break;
+				*/
 				case PRIMED_TNT: // TNT
 					event.setRadius((float) 14.0);
 					event.setFire(true);
