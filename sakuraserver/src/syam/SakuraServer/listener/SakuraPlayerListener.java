@@ -92,7 +92,7 @@ public class SakuraPlayerListener implements Listener {
 				Actions.joinAutoFlyPlayer(player);
 
 				// 資源ワールドのバージョンチェック
-				Actions.checkResourceWorld(player);
+				//Actions.checkResourceWorld(player);
 			}
 		}, 0L);
 	}

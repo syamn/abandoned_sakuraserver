@@ -34,6 +34,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.inventory.ItemStack;
 
 import syam.SakuraServer.SakuraServer;
 import syam.util.Actions;
@@ -78,29 +79,61 @@ public class SakuraBlockListener implements Listener {
 		}
 	}
 
-	// レッドストーン鉱石を壊した
-	//@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true) //debug TODO:一時的に無効 1.3.1
-	public void onRedstoneOreBreak(BlockBreakEvent event){
-		Player player = event.getPlayer();
-		Block block = event.getBlock();
+	// カボチャを壊した
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onPumpkinBreak(BlockBreakEvent event){
+		final Player player = event.getPlayer();
+		final Block block = event.getBlock();
 
 		// アイテムID 73:Redstone ore || 74:Glowing redstone ore 以外は返す
-		if (block.getWorld() != Bukkit.getServer().getWorld("resource") || (block.getTypeId() != 73 && block.getTypeId() != 74)){
+		if (!block.getWorld().getName().toLowerCase().startsWith("resource") || (block.getTypeId() != 86 && block.getTypeId() != 91)){
 			return;
 		}
 
-		// クリエイティブも無視
-		if (player.getGameMode() == GameMode.CREATIVE){
+		// 棒以外無視
+		ItemStack is = player.getItemInHand();
+		if (is == null || is.getType() != Material.STICK){
 			return;
 		}
-
-		int ran = (int)(Math.random() * 100); // 0-99 random
 
 		// 爆発させる
-		if (ran < 10){ // 0-19 → 20%
-			//player.setNoDamageTicks(40); // 爆発時にダメージを受けないよう2秒間無敵
-			block.getWorld().createExplosion(block.getLocation(), (float) 1.0, false);
+		block.breakNaturally();
+		block.getWorld().createExplosion(block.getLocation(), (float) 0.0, false);
+		checkNextTicks(block, true);
+	}
+	final BlockFace[] oumpkinSearchDirs = new BlockFace[]{
+            BlockFace.NORTH,
+            BlockFace.EAST,
+            BlockFace.SOUTH,
+            BlockFace.WEST,
+            BlockFace.UP,
+            BlockFace.DOWN
+        };
+	private void checkNextTicks(final Block block, final boolean first){
+		if (block == null || (!first && (block.getTypeId() != 86 && block.getTypeId() == 91))){
+			return;
 		}
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+			@Override
+			public void run(){
+				List<Block> nexts = new ArrayList<Block>();
+
+				Block check;
+				for (final BlockFace face : oumpkinSearchDirs){
+					check = block.getRelative(face);
+					if (check.getTypeId() == 86 || check.getTypeId() == 91){
+						if (Math.random() > 0.5) check.breakNaturally();
+						else check.setTypeId(0);
+
+						block.getWorld().createExplosion(block.getLocation(), 0.1F, false);
+						nexts.add(check);
+					}
+				}
+				for (final Block next : nexts){
+					checkNextTicks(next, false);
+				}
+			}
+		}, 4L);
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

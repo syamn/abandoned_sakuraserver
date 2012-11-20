@@ -45,10 +45,6 @@ public class SakuraPlayer {
 	 * Flyモードの終了日時
 	 */
 	private Date flyLimitDate = null;
-	/**
-	 * 最後にログアウトしたときの資源ワールドのシード値
-	 */
-	private long resourceSeed = 0;
 
 	// もふもふ関係
 	private int mofDate = 0;
@@ -88,7 +84,6 @@ public class SakuraPlayer {
 			if (configurationFile.getString("flyLimitDate") != null){
 				flyLimitDate = sdf.parse(configurationFile.getString("flyLimitDate"));
 			}
-			resourceSeed = configurationFile.getLong("resourceSeed", 0);
 
 			mofCount = configurationFile.getInt("mofCount", 0);
 
@@ -115,8 +110,6 @@ public class SakuraPlayer {
 					String flyLimitDateString = sdf.format(flyLimitDate);
 					configurationFile.set("flyLimitDate", flyLimitDateString);
 				}
-
-				configurationFile.set("resourceSeed", resourceSeed);
 
 				configurationFile.set("mofCount", mofCount);
 
@@ -180,14 +173,6 @@ public class SakuraPlayer {
 	}
 	public Date getFlyLimitDate(){
 		return flyLimitDate;
-	}
-
-	public void setResourceSeed(long version){
-		saved = false;
-		resourceSeed = version;
-	}
-	public long getResourceSeed(){
-		return resourceSeed;
 	}
 
 	public int getmfmfCount(){

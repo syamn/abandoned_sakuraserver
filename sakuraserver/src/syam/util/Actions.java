@@ -949,6 +949,7 @@ public class Actions {
 	/* 資源ワールドチェック */
 	/****************************************/
 	// ログイン時に資源ワールドが新しいものかチェック
+	/*
 	public static void checkResourceWorld(Player player){
 		// 資源ワールドが存在しなければ(ちょうど更新中なら)メッセージだけ表示して何もしない
 		if (Bukkit.getWorld("resource") == null){
@@ -974,6 +975,7 @@ public class Actions {
 		// 現行資源ワールドバージョンを設定
 		SakuraServer.playerData.get(player).setResourceSeed(currentResourceSeed);
 	}
+	*/
 
 
 	/****************************************/
