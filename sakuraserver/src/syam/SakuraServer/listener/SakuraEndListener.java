@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -28,7 +27,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityCreatePortalEvent;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -45,7 +43,6 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 
 import syam.SakuraServer.SakuraServer;
 import syam.util.Actions;
-import syam.util.Cuboid;
 
 public class SakuraEndListener implements Listener {
 	public final static Logger log = SakuraServer.log;
@@ -292,7 +289,7 @@ public class SakuraEndListener implements Listener {
 					player.damage(player.getHealth() - 1);
 					player.setFireTicks(200);
 				}
-				*/
+				 */
 			}
 		}
 	}
@@ -330,12 +327,12 @@ public class SakuraEndListener implements Listener {
 					event.setRadius((float) 9.0);
 					event.setFire(true);
 					break;
-				/* TODO:Breaking 1.4.2
+					/* TODO:Breaking 1.4.2
 				case FIREBALL: // ガストの火の玉
 					event.setRadius((float) 3.0);
 					event.setFire(true);
 					break;
-				*/
+					 */
 				case PRIMED_TNT: // TNT
 					event.setRadius((float) 14.0);
 					event.setFire(true);

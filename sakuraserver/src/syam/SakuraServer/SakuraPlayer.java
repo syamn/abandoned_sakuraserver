@@ -1,18 +1,12 @@
 package syam.SakuraServer;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
-
-import org.bukkit.configuration.Configuration;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -54,7 +48,7 @@ public class SakuraPlayer {
 	public SakuraPlayer(String name){
 		this.playerName = name;
 		String filename = SakuraServer.getInstance().getDataFolder() + System.getProperty("file.separator") +
-							"userData" + System.getProperty("file.separator") + name + ".yml";
+				"userData" + System.getProperty("file.separator") + name + ".yml";
 		this.file = new File(filename);
 
 		load();

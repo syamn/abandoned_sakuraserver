@@ -41,19 +41,19 @@ public class NoteAlert {
 			@Override
 			public void run() {
 				switch(phase) {
-				case PLAY_NOTE:
-					if (iter.hasNext()) {
-						Note note = iter.next();
-						if (note != null) {
-							player.playNote(loc, Instrument.PIANO, note);
+					case PLAY_NOTE:
+						if (iter.hasNext()) {
+							Note note = iter.next();
+							if (note != null) {
+								player.playNote(loc, Instrument.PIANO, note);
+							}
+						} else {
+							phase = Phase.TIDY_UP;
 						}
-					} else {
-						phase = Phase.TIDY_UP;
-					}
-					break;
-				case TIDY_UP:
-					cancel();
-					break;
+						break;
+					case TIDY_UP:
+						cancel();
+						break;
 				}
 			}
 		}, 0L, delay);

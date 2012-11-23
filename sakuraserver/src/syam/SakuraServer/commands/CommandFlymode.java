@@ -7,7 +7,6 @@ package syam.SakuraServer.commands;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import syam.SakuraServer.SakuraPlayer;
 import syam.SakuraServer.SakuraServer;
@@ -92,11 +91,11 @@ public class CommandFlymode extends BaseCommand{
 
 			// 支払い
 			int cost = SakuraServer.configIntegerMap.get("FlyModeCost");
-			if (!Actions.checkMoney(player.getName(), (double) cost)){
+			if (!Actions.checkMoney(player.getName(), cost)){
 				Actions.message(sender, player, "&cお金が足りません！ "+cost+"Coinが必要です！");
 				return;
 			}
-			if (!Actions.takeMoney(player.getName(), (double) cost)){
+			if (!Actions.takeMoney(player.getName(), cost)){
 				Actions.message(sender, player, "&c支払いにエラーが発生しました");
 				return;
 			}

@@ -32,16 +32,16 @@ public class SakuraMySqlManager {
 	public final static String table_userdata = "user_data";
 	/* クエリ */
 	private static String sql_CreateTable1 = "CREATE TABLE IF NOT EXISTS `"+table_Log+"` (" +
-				"`data_id` int(11) NOT NULL auto_increment, " +
-				"`date` datetime NOT NULL, " +
-				"`player_name` varchar(32) default NULL, " +
-				"`action` int(11) NOT NULL, " +
-				"`world_name` varchar(255), " +
-				"`x` double default NULL, " +
-				"`y` double default NULL, " +
-				"`z` double default NULL, " +
-				"`data` varchar(500) default NULL, " +
-				"PRIMARY KEY (`data_id`))";
+			"`data_id` int(11) NOT NULL auto_increment, " +
+			"`date` datetime NOT NULL, " +
+			"`player_name` varchar(32) default NULL, " +
+			"`action` int(11) NOT NULL, " +
+			"`world_name` varchar(255), " +
+			"`x` double default NULL, " +
+			"`y` double default NULL, " +
+			"`z` double default NULL, " +
+			"`data` varchar(500) default NULL, " +
+			"PRIMARY KEY (`data_id`))";
 	private static String sql_CreateTable2 = "CREATE TABLE IF NOT EXISTS `"+table_userdata+"` (" +
 			"`player_id` int(8) NOT NULL auto_increment, " +
 			"`player_name` varchar(32) NOT NULL, " +
@@ -59,14 +59,14 @@ public class SakuraMySqlManager {
 			"UNIQUE KEY `player_name` (`player_name`))";
 
 	private static String sql_InsertLogTable = "INSERT INTO " +table_Log+ " " +
-				"(`date`, `player_name`, `action`, `world_name`, `x`, `y`, `z`, `data`) " +
-				"VALUES " +
-				"(?, ?, ?, ?, ?, ?, ?, ?)";
+			"(`date`, `player_name`, `action`, `world_name`, `x`, `y`, `z`, `data`) " +
+			"VALUES " +
+			"(?, ?, ?, ?, ?, ?, ?, ?)";
 
 	private static String sql_InsertAuthTable = "INSERT INTO " +table_userdata+ " " +
-				"(`player_name`, `password`, `email`, `updatedate`, `regdate`) " +
-				"VALUES " +
-				"(?, ?, ?, ?, ?)";
+			"(`player_name`, `password`, `email`, `updatedate`, `regdate`) " +
+			"VALUES " +
+			"(?, ?, ?, ?, ?)";
 	private static String sql_ChangePassword = "UPDATE " +table_userdata+ " SET " +
 			"`password` = ?, " +
 			"`updatedate` = ? " +
@@ -151,7 +151,7 @@ public class SakuraMySqlManager {
 		// 日時をTimestamp(datetime)型に変換する
 		Timestamp date = null;
 		try{
-			 date = Timestamp.valueOf(dateString);
+			date = Timestamp.valueOf(dateString);
 		}catch(IllegalArgumentException ex){
 			log.warning(logPrefix+"Could not convert Datetime: "+ex.getMessage());
 			return false;

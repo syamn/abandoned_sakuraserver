@@ -12,7 +12,6 @@ import java.util.Map;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
-import org.bukkit.entity.Player;
 
 import syam.SakuraServer.SakuraServer;
 import syam.util.Actions;
@@ -65,7 +64,7 @@ public class SakuraCommandHandler implements TabExecutor{
 		if (bc.name != null){
 			commands.put(bc.name, bc);
 		}else{
-			plugin.log.warning("Invalid command not registered! " + bc.getClass().getName());
+			SakuraServer.log.warning("Invalid command not registered! " + bc.getClass().getName());
 		}
 	}
 }

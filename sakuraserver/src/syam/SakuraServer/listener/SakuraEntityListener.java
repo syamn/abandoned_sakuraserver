@@ -1,36 +1,30 @@
 package syam.SakuraServer.listener;
 
-import java.util.List;
-import java.util.Random;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.PortalType;
 import org.bukkit.entity.AnimalTamer;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
-import org.bukkit.entity.Arrow;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityCreatePortalEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
-import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 
 import syam.SakuraServer.SakuraMySqlManager;
 import syam.SakuraServer.SakuraPlayer;
@@ -64,7 +58,7 @@ public class SakuraEntityListener implements Listener {
 
 			OfflinePlayer tamer = (OfflinePlayer)((Tameable) event.getEntity()).getOwner();
 
-			if (tamer != (OfflinePlayer) event.getEntity().getKiller()){ //自分のMOBでなければ
+			if (tamer != event.getEntity().getKiller()){ //自分のMOBでなければ
 				String mob = "MOB";
 				String killerName = event.getEntity().getKiller().getName();
 				if (event.getEntity().getType() == EntityType.OCELOT){
@@ -88,8 +82,8 @@ public class SakuraEntityListener implements Listener {
 
 		// 倒された全MOBを全員に表示
 		if (SakuraServer.configBooleanMap.get("BroadcastOnMobDeath")  &&
-			event.getEntity().getLastDamageCause().getCause().toString() == "ENTITY_ATTACK" &&
-			event.getEntity().getKiller() != null){
+				event.getEntity().getLastDamageCause().getCause().toString() == "ENTITY_ATTACK" &&
+				event.getEntity().getKiller() != null){
 			Actions.broadcastMessage(msgPrefix+"MOB &c" + event.getEntity().getType().getName() + "&f Killed by &c" + event.getEntity().getKiller().getDisplayName());
 		}
 	}
@@ -110,10 +104,10 @@ public class SakuraEntityListener implements Listener {
 			ItemStack hold = player.getItemInHand();
 
 			if (hold.getType() == Material.GOLD_AXE ||
-				hold.getType() == Material.GOLD_HOE ||
-				hold.getType() == Material.GOLD_PICKAXE ||
-				hold.getType() == Material.GOLD_SWORD ||
-				hold.getType() == Material.GOLD_SPADE){
+					hold.getType() == Material.GOLD_HOE ||
+					hold.getType() == Material.GOLD_PICKAXE ||
+					hold.getType() == Material.GOLD_SWORD ||
+					hold.getType() == Material.GOLD_SPADE){
 				((Creeper) ent).setPowered(true);
 			}
 		}
@@ -190,12 +184,12 @@ public class SakuraEntityListener implements Listener {
 					targetPlayer.setPassenger(player);
 					Actions.message(null, player, "&bプレイヤーに乗りました！");
 
-				// 叩いたプレイヤーに乗っているプレイヤーが自分の場合は降りる
+					// 叩いたプレイヤーに乗っているプレイヤーが自分の場合は降りる
 				}else if((targetPlayer.getPassenger() instanceof Player) &&
 						(Player) targetPlayer.getPassenger() == player){
 					targetPlayer.eject();
 					Actions.message(null, player, "&bプレイヤーから降りました！");
-				// 他人がそのプレイヤーに既にのっている
+					// 他人がそのプレイヤーに既にのっている
 				}else{
 					Actions.message(null, player, "&c既に他人がそのプレイヤーにのっています！");
 				}
@@ -238,6 +232,27 @@ public class SakuraEntityListener implements Listener {
 		}
 	}
 
+	// ゾンビスポナー無効化
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onCreatureSpawn(final CreatureSpawnEvent event){
+		if (SpawnReason.SPAWNER.equals(event.getSpawnReason())){
+			Entity e = event.getEntity();
+			switch (e.getType()){
+				// スポナー拒否
+				case PIG:
+				case COW:
+				case CHICKEN:
+				case ZOMBIE:
+					event.setCancelled(true);
+					return;
+				default:
+					break;
+			}
+			if (EntityType.ZOMBIE.equals(e.getType())){
+				event.setCancelled(true);
+			}
+		}
+	}
 
 	/**
 	 * 金の装備を身につけている時はターゲッティングイベントをキャンセル
@@ -266,10 +281,10 @@ public class SakuraEntityListener implements Listener {
 
 		// 手に持っているものが金装備以外ならリターン
 		if (hold.getType() != Material.GOLD_AXE &&
-			hold.getType() != Material.GOLD_HOE &&
-			hold.getType() != Material.GOLD_PICKAXE &&
-			hold.getType() != Material.GOLD_SWORD &&
-			hold.getType() != Material.GOLD_SPADE){
+				hold.getType() != Material.GOLD_HOE &&
+				hold.getType() != Material.GOLD_PICKAXE &&
+				hold.getType() != Material.GOLD_SWORD &&
+				hold.getType() != Material.GOLD_SPADE){
 			return;
 		}
 
@@ -282,9 +297,9 @@ public class SakuraEntityListener implements Listener {
 
 		// アーマーが金装備ならターゲット拒否
 		if (armors[0].getType() == Material.GOLD_BOOTS &&
-			armors[1].getType() == Material.GOLD_LEGGINGS &&
-			armors[2].getType() == Material.GOLD_CHESTPLATE &&
-			armors[3].getType() == Material.GOLD_HELMET){
+				armors[1].getType() == Material.GOLD_LEGGINGS &&
+				armors[2].getType() == Material.GOLD_CHESTPLATE &&
+				armors[3].getType() == Material.GOLD_HELMET){
 			event.setCancelled(true);
 		}
 	}

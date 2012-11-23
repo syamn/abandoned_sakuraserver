@@ -67,7 +67,7 @@ public class SakuraServer extends JavaPlugin{
 	private static SakuraServer instance;
 
 	public static void setLogPath(String logDir){
-	  SakuraServer.logDir = logDir;
+		SakuraServer.logDir = logDir;
 	}
 
 	//タイマー
@@ -104,8 +104,9 @@ public class SakuraServer extends JavaPlugin{
 	public static ConcurrentHashMap<Integer, Double> jumpPotionMap = new ConcurrentHashMap<Integer, Double>();
 	public static ConcurrentHashMap<Integer, Double> speedPotionMap = new ConcurrentHashMap<Integer, Double>();
 	public static ConcurrentHashMap<Integer, Double> poisonPotionMap = new ConcurrentHashMap<Integer, Double>();
-	*/
+	 */
 
+	@Override
 	public void onDisable(){
 		// タイマーストップ
 		timer.stop();
@@ -143,6 +144,7 @@ public class SakuraServer extends JavaPlugin{
 		log.info("SakuraServerPlugin ["+pdfFile.getName()+"] version "+pdfFile.getVersion()+" is disabled!");
 	}
 
+	@Override
 	public void onEnable(){
 		instance = this;
 
@@ -162,26 +164,26 @@ public class SakuraServer extends JavaPlugin{
 		if(plugin != null & plugin instanceof Vault) {
 			RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
 			if(economyProvider==null){
-	        	log.warning(logPrefix+"Economy plugin not Fount. Disabling plugin.");
-		        getPluginLoader().disablePlugin(this);
-		        return;
+				log.warning(logPrefix+"Economy plugin not Fount. Disabling plugin.");
+				getPluginLoader().disablePlugin(this);
+				return;
 			}
-	        // Vaultと経済概念にフックする
-	        if(!Actions.hookVault(plugin, economyProvider)){ // Hook
-	        	log.warning(logPrefix+"Could NOT be hook to Vault. Disabling plugin.");
-		        getPluginLoader().disablePlugin(this);
-		        return;
-	        }
-	        log.info(logPrefix+"Hooked to Vault!");
+			// Vaultと経済概念にフックする
+			if(!Actions.hookVault(plugin, economyProvider)){ // Hook
+				log.warning(logPrefix+"Could NOT be hook to Vault. Disabling plugin.");
+				getPluginLoader().disablePlugin(this);
+				return;
+			}
+			log.info(logPrefix+"Hooked to Vault!");
 
-	        if (economyProvider != null){
+			if (economyProvider != null){
 
-	        }
-	    } else {
-	        log.warning(logPrefix+"Vault was NOT found! Disabling plugin.");
-	        getPluginLoader().disablePlugin(this);
-	        return;
-	    }
+			}
+		} else {
+			log.warning(logPrefix+"Vault was NOT found! Disabling plugin.");
+			getPluginLoader().disablePlugin(this);
+			return;
+		}
 
 		// イベントを登録
 		PluginManager pm = getServer().getPluginManager();
@@ -208,10 +210,12 @@ public class SakuraServer extends JavaPlugin{
 	}
 
 	ActionListener action = new ActionListener(){
+		@Override
 		public void actionPerformed (ActionEvent event){
 			if (UpdateTime == 0){
 				// 10秒ごとに呼ばれる
 				getServer().getScheduler().scheduleSyncDelayedTask(SakuraServer.instance, new Runnable() {
+					@Override
 					public void run() {
 						// 重い処理はタイマー内の別タスク内で行う
 						Actions.checkExpireFlyPlayer();
@@ -332,7 +336,7 @@ public class SakuraServer extends JavaPlugin{
 				}
 				log.info(potionString+" / "+potionAmplifier+" / "+potionCost);
 			}
-			*/
+			 */
 		}
 	}
 
@@ -385,6 +389,6 @@ public class SakuraServer extends JavaPlugin{
 	 * @return シングルトンインスタンス 何もない場合はnull
 	 */
 	public static SakuraServer getInstance() {
-    	return instance;
-    }
+		return instance;
+	}
 }

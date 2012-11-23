@@ -1,50 +1,44 @@
 package syam.SakuraServer.listener;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Field;
 import java.util.logging.Logger;
 
+import net.minecraft.server.NBTBase;
+import net.minecraft.server.NBTTagCompound;
+import net.minecraft.server.NBTTagList;
 import net.minecraft.server.Packet201PlayerInfo;
+import net.minecraft.server.TileEntity;
+import net.minecraft.server.TileEntityMobSpawner;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Note;
-import org.bukkit.Note.Tone;
-import org.bukkit.Server;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.Sign;
+import org.bukkit.craftbukkit.block.CraftCreatureSpawner;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Item;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import syam.SakuraServer.SakuraPlayer;
@@ -86,6 +80,7 @@ public class SakuraPlayerListener implements Listener {
 		SakuraServer.playerData.put(player, sakuraPlayer);
 
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SakuraServer.getInstance(), new Runnable() {
+			@Override
 			public void run() {
 				// 重い処理はタイマー内の別タスク内で行う
 				// 飛行モード有効チェック
@@ -227,6 +222,13 @@ public class SakuraPlayerListener implements Listener {
 			}
 		}
 
+		/*
+		if ((block.getType() == Material.MOB_SPAWNER) && player == Bukkit.getServer().getPlayer("syamn")){
+			setSpawnerData(block);
+			Actions.message(null, player, "&cSetted custom spawner!");
+		}
+		*/
+
 		/* デバッグ用 */
 		if (false && player == Bukkit.getServer().getPlayer("syamn")){
 			log.info("==Debug==");
@@ -235,6 +237,81 @@ public class SakuraPlayerListener implements Listener {
 			log.info("getTypeId():"+block.getTypeId());
 		}
 	}
+
+	@Deprecated
+	private void setSpawnerData(Block block){
+		if (block == null) return;
+		BlockState blockState = block.getState();
+
+		if (!(blockState instanceof CreatureSpawner)){
+			throw new IllegalArgumentException("setSpawnerData called on non-spawner block: " + block);
+		}
+
+		CraftCreatureSpawner spawner = (CraftCreatureSpawner)blockState;
+		//spawner.setSpawnedType(EntityType.SKELETON);
+
+		try{
+			Field tileField = CraftCreatureSpawner.class.getDeclaredField("spawner");
+			tileField.setAccessible(true);
+
+			TileEntityMobSpawner tile = (TileEntityMobSpawner)tileField.get(spawner);
+			NBTTagCompound tag = new NBTTagCompound();
+			tile.b(tag); // MCP read
+
+			//debug
+			/*
+			log.info("EntityId: "+ tag.getString("EntityId"));
+			if (tag.hasKey("SpawnData")){
+				NBTTagCompound tag2 = tag.getCompound("SpawnData");
+				log.info("getName: " + tag2.getName());
+			}else{
+				log.info("SpawnData: (non-set)");
+			}
+			*/
+
+			if (tag.hasKey("SpawnData")){
+				this.temp = tag.getCompound("SpawnData");
+				log.info("Copied from clicked Spawner!");
+				return;
+			}else{
+				if (temp == null) return;
+				tag.setCompound("SpawnData", temp);
+				log.info("putted Tag!");
+			}
+
+			tile.a(tag); // MCP write
+		}
+		catch (Exception ex){
+			log.warning("Reflection failed: " + ex.getMessage());
+		}
+
+		blockState.update();
+	}
+	private NBTTagCompound getSpawnDataCompound(){
+		NBTTagCompound tag = new NBTTagCompound("SpawnData");
+		NBTTagList equip = new NBTTagList("Equipmant");
+
+		NBTTagCompound eq1 = new NBTTagCompound();
+		eq1.setByte("Count", (byte)1); // item amount
+		eq1.setShort("Damage", (short)0);  // item damaged (-1 is unbreaking)
+		eq1.setShort("id", (short)276); // item id
+		/*
+		NBTTagCompound eq1_tag = new NBTTagCompound("tag");
+		NBTTagCompound eq1_tag_ench = new NBTTagCompound("ench");
+		NBTTagCompound eq1_Tag_ench_cmp = new NBTTagCompound();
+		eq1_Tag_ench_cmp.setShort("id", (short)17); //enchant ID
+		eq1_Tag_ench_cmp.setShort("lvl", (short)128); //enchant lvl
+		eq1_tag_ench.set(null, eq1_Tag_ench_cmp);
+		eq1_tag.set("ench", eq1_tag_ench);
+		eq1.set("tag", eq1_tag);
+		*/
+
+		equip.add(eq1);
+		tag.set("Equipmeant", equip);
+		return tag;
+	}
+	private NBTTagCompound temp = null;
+
 
 	/**
 	 * プレイヤーがテレポートした
@@ -297,7 +374,7 @@ public class SakuraPlayerListener implements Listener {
 		Block checkUpperBlock = checkUnderBlock.getRelative(BlockFace.UP, 1);
 
 		if (checkUnderBlock.getType() == Material.DIAMOND_BLOCK ||
-			checkUpperBlock.getType() == Material.DIAMOND_BLOCK){
+				checkUpperBlock.getType() == Material.DIAMOND_BLOCK){
 
 			Actions.message(null, player, "&c Touch Diamond block!");
 
@@ -306,7 +383,7 @@ public class SakuraPlayerListener implements Listener {
 			List<Note> notes = new ArrayList<Note>();
 			notes.add(new Note(20));
 			Actions.playNote(player, notes, 0L);
-			*/
+			 */
 
 			Vector dir = diffLoc.getDirection();
 			Vector vect = new Vector((-(dir.getX())) * 5.0D, 2.0D, (-(dir.getZ())) * 5.0D);

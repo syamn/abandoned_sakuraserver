@@ -5,10 +5,7 @@
 package syam.SakuraServer.commands;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffectType;
 
 import syam.SakuraServer.SakuraServer;
 import syam.util.Actions;

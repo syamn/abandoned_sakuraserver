@@ -7,10 +7,7 @@ package syam.SakuraServer.commands;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import syam.SakuraServer.SakuraMySqlManager;
 import syam.SakuraServer.SakuraSecurity;

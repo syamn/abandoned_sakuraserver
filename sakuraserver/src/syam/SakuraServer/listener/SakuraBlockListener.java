@@ -5,35 +5,29 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.GameMode;
-import org.bukkit.Instrument;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
-import org.bukkit.Note.Tone;
+import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
-import org.bukkit.event.block.BlockFormEvent;
-import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.world.PortalCreateEvent;
+import org.bukkit.event.world.PortalCreateEvent.CreateReason;
 import org.bukkit.inventory.ItemStack;
 
 import syam.SakuraServer.SakuraServer;
@@ -66,17 +60,30 @@ public class SakuraBlockListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-	public void onBlockBreak(BlockBreakEvent event){
-		Block block = event.getBlock();
-		Player player = event.getPlayer();
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onBlockBreak(final BlockBreakEvent event){
+		final Block block = event.getBlock();
+		final Player player = event.getPlayer();
 
+		// ネザーなら氷を壊して水を出現させる
+		if (block.getTypeId() == 79 && Environment.NETHER.equals(block.getLocation().getWorld().getEnvironment())){
+			if (player.hasPermission("sakuraserver.citizen") && GameMode.SURVIVAL.equals(player.getGameMode())){
+				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
+					public void run(){
+						block.setTypeId(8, true); // set water
+					}
+				}, 0L);
+			}
+		}
+
+		/*
 		if (block.getType() == Material.DIAMOND_ORE){
 			// 音を鳴らす
 			List<Note> notes = new ArrayList<Note>();
 			notes.add(new Note(16));
 			Actions.playNote(player, notes, 0L);
 		}
+		*/
 	}
 
 	// カボチャを壊した
@@ -102,13 +109,13 @@ public class SakuraBlockListener implements Listener {
 		checkNextTicks(block, true);
 	}
 	final BlockFace[] oumpkinSearchDirs = new BlockFace[]{
-            BlockFace.NORTH,
-            BlockFace.EAST,
-            BlockFace.SOUTH,
-            BlockFace.WEST,
-            BlockFace.UP,
-            BlockFace.DOWN
-        };
+			BlockFace.NORTH,
+			BlockFace.EAST,
+			BlockFace.SOUTH,
+			BlockFace.WEST,
+			BlockFace.UP,
+			BlockFace.DOWN
+	};
 	private void checkNextTicks(final Block block, final boolean first){
 		if (block == null || (!first && (block.getTypeId() != 86 && block.getTypeId() == 91))){
 			return;
@@ -144,7 +151,7 @@ public class SakuraBlockListener implements Listener {
 		// ネザーポータルを作った (もしエンドポータルや今後追加されるポータルが判定されるようなら、event.getBlockAgainst().getType() == Material.OBSIDIAN を条件に追加？
 		if(block.getType() == Material.PORTAL){
 			// new 以外で作った場合、管理権限を持っていなければ削除
-			if((block.getWorld() != Bukkit.getWorld("new")) && !(player.hasPermission("sakuraserver.admin"))){
+			if((!block.getWorld().getName().startsWith("new")) && !(player.hasPermission("sakuraserver.admin"))){
 				String loc = block.getWorld().getName()+":"+block.getX()+","+block.getY()+","+block.getZ();
 				Actions.executeCommandOnConsole("kick "+player.getName()+" ネザーポータル設置違反 at "+loc);
 
@@ -162,9 +169,66 @@ public class SakuraBlockListener implements Listener {
 		}
 	}
 
+	//ポータル移動
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onPlayerPortal(final PlayerPortalEvent event){
+		final Player player = event.getPlayer();
+		final Location from = event.getFrom();
+		final Environment fromEnv = from.getWorld().getEnvironment();
+		if (Environment.THE_END.equals(fromEnv)){
+			return;
+		}
+
+		int x = from.getBlockX();
+		int z = from.getBlockZ();
+		World world = null;
+		if (Environment.NORMAL.equals(fromEnv)){
+			world = Bukkit.getWorld("new_nether"); // goto nether
+		}else if (Environment.NETHER.equals(fromEnv)){
+			world = Bukkit.getWorld("new"); // goto main
+		}
+		if (world == null) return;
+
+		int y = getFirtstPortalY(world, x, z, player);
+		if (y < 0){
+			Actions.message(null, player, "&c"+ world.getName() + "のxz座標("+x+","+z+")にポータルが見つかりません！");
+			event.setCancelled(true);
+			return;
+		}
+
+		final Location ploc = player.getLocation().clone();
+		ploc.setWorld(world);
+		ploc.setX(x);
+		ploc.setY(y);
+		ploc.setZ(z);
+		event.setTo(ploc);
+	}
+	private int getFirtstPortalY(final World w, final int x, final int z, final Player player){
+		final Chunk chunk = w.getChunkAt(x, z);
+		if (!w.isChunkLoaded(x, z) && w.loadChunk(x, z, false)){
+			return -1;
+		}
+		for (int y = 2; y < 256; y++){ // don't check y=0,1
+			if (w.getBlockAt(x, y, z).getTypeId() == 90){
+				return y;
+			}
+		}
+		return -1;
+	}
+
+	// ポータル生成キャンセル
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onPortalCreate(final PortalCreateEvent event){
+		if (CreateReason.OBC_DESTINATION.equals(event.getReason())){
+			event.setCancelled(true);
+			log.info("Portal auto-create event cancelled on World " + event.getWorld().getName());
+		}
+	}
+
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onBlockDamage(BlockDamageEvent event){
 		if (event.getBlock().getType() == Material.BEDROCK){
+
 			SakuraServer.bedrockConfig.put(event.getPlayer(), event.getBlock().getLocation());
 			//Actions.message(null, event.getPlayer(), msgPrefix+"このブロックを右クリックすると黒曜石に変換できます！");
 		}
@@ -197,4 +261,5 @@ public class SakuraBlockListener implements Listener {
 			/* ヒール看板終わり */
 		}
 	}
+
 }

@@ -89,7 +89,7 @@ public abstract class BaseCommand {
 				Actions.message(sender, null, error.getMessage());
 				error = error.getCause();
 			}
-			*/
+			 */
 		}
 
 		return true;

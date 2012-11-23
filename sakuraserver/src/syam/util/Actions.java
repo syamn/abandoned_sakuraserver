@@ -8,20 +8,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
-
-import org.apache.commons.lang.time.DateUtils;
 
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 
-import ru.tehkode.permissions.PermissionManager;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
-import ru.tehkode.permissions.PermissionUser;
-
+import org.apache.commons.lang.time.DateUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -37,17 +31,15 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EnderCrystal;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Stairs;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
 
+import ru.tehkode.permissions.PermissionUser;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
 import syam.SakuraServer.SakuraPlayer;
 import syam.SakuraServer.SakuraServer;
 
@@ -92,13 +84,13 @@ public class Actions {
 	 * @return 成功ならtrue 失敗ならfalse
 	 */
 	public static boolean hookVault(Plugin plugin, RegisteredServiceProvider<Economy> econProvider){
-        try{
-        	vault = (Vault) plugin;
-        	economy = econProvider.getProvider();
-        }catch(Exception e){
-        	return false;
-        }
-        return true;
+		try{
+			vault = (Vault) plugin;
+			economy = econProvider.getProvider();
+		}catch(Exception e){
+			return false;
+		}
+		return true;
 	}
 
 
@@ -363,16 +355,16 @@ public class Actions {
 	 * @return
 	 */
 	public static String combine(String[] s, String glue)
-    {
-      int k = s.length;
-      if (k == 0){ return null; }
-      StringBuilder out = new StringBuilder();
-      out.append(s[0]);
-      for (int x = 1; x < k; x++){
-        out.append(glue).append(s[x]);
-      }
-      return out.toString();
-    }
+	{
+		int k = s.length;
+		if (k == 0){ return null; }
+		StringBuilder out = new StringBuilder();
+		out.append(s[0]);
+		for (int x = 1; x < k; x++){
+			out.append(glue).append(s[x]);
+		}
+		return out.toString();
+	}
 	/**
 	 * コマンドをコンソールから実行する
 	 * @param command
@@ -525,7 +517,7 @@ public class Actions {
 		}while (y == -1);
 
 		// 安全な座標を返す
-		return new Location(world, (double)randX + 0.5D, (double)y, (double)randZ + 0.5D);
+		return new Location(world, randX + 0.5D, y, randZ + 0.5D);
 	}
 	private static int getValidHighestBlock(World world, int x, int z){
 		world.getChunkAt(new Location(world, x, 0, z)).load(false);
@@ -612,7 +604,7 @@ public class Actions {
 		}
 
 		// クリスタルをスポーンさせる
-		Location targetLoc = Actions.spawnEnderCrystal(startLoc.add(0.0D, (double)i, 0.0D), true);
+		Location targetLoc = Actions.spawnEnderCrystal(startLoc.add(0.0D, i, 0.0D), true);
 
 		// 爆発の煙と音を出す
 		targetLoc.getWorld().playEffect(targetLoc, Effect.SMOKE, 3);
@@ -683,7 +675,7 @@ public class Actions {
 	public static PotionEffectType validPotion(String potion){
 		if (potion.equalsIgnoreCase("jump"))
 			return null;
-			// return PotionEffectType.JUMP; // 一時的に使用禁止
+		// return PotionEffectType.JUMP; // 一時的に使用禁止
 		if (potion.equalsIgnoreCase("speed"))
 			return PotionEffectType.SPEED;
 		if (potion.equalsIgnoreCase("poison"))
@@ -975,7 +967,7 @@ public class Actions {
 		// 現行資源ワールドバージョンを設定
 		SakuraServer.playerData.get(player).setResourceSeed(currentResourceSeed);
 	}
-	*/
+	 */
 
 
 	/****************************************/
