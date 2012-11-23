@@ -46,6 +46,8 @@ import syam.SakuraServer.commands.CommandRegister;
 import syam.SakuraServer.commands.CommandSakura;
 import syam.SakuraServer.commands.CommandSyamn;
 import syam.SakuraServer.commands.SakuraCommandHandler;
+import syam.SakuraServer.listener.SakuraCreativeListener;
+import syam.SakuraServer.listener.SakuraInventoryListener;
 import syam.SakuraServer.listener.SakuraBlockListener;
 import syam.SakuraServer.listener.SakuraEndListener;
 import syam.SakuraServer.listener.SakuraEntityListener;
@@ -63,6 +65,8 @@ public class SakuraServer extends JavaPlugin{
 	private final SakuraBlockListener blockListener = new SakuraBlockListener(this);
 	private final SakuraEntityListener entityListener = new SakuraEntityListener(this);
 	private final SakuraEndListener endListener = new SakuraEndListener(this);
+	private final SakuraInventoryListener invListener = new SakuraInventoryListener(this);
+	private final SakuraCreativeListener creativeListener = new SakuraCreativeListener(this);
 
 	private static SakuraServer instance;
 
@@ -191,6 +195,8 @@ public class SakuraServer extends JavaPlugin{
 		pm.registerEvents(playerListener, this);
 		pm.registerEvents(entityListener, this);
 		pm.registerEvents(endListener, this);
+		pm.registerEvents(invListener, this);
+		pm.registerEvents(creativeListener, this);
 
 		// コマンドを登録
 		//SakuraCommandRegister.registerCommands();

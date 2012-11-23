@@ -4,11 +4,9 @@ package syam.SakuraServer.listener;
 import java.lang.reflect.Field;
 import java.util.logging.Logger;
 
-import net.minecraft.server.NBTBase;
 import net.minecraft.server.NBTTagCompound;
 import net.minecraft.server.NBTTagList;
 import net.minecraft.server.Packet201PlayerInfo;
-import net.minecraft.server.TileEntity;
 import net.minecraft.server.TileEntityMobSpawner;
 
 import org.bukkit.Bukkit;
@@ -23,13 +21,11 @@ import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.block.CraftCreatureSpawner;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -405,33 +401,5 @@ public class SakuraPlayerListener implements Listener {
 		newMessage = newMessage.replaceAll("&([0-9a-fk-or])", "\u00A7$1");
 
 		event.setLeaveMessage(newMessage);
-	}
-
-	/**
-	 * 手持ちのアイテムが替わった No ignoreCancel(無視しない)
-	 * @param event
-	 */
-	@EventHandler(priority = EventPriority.LOW)
-	public void onInventoryClick(final InventoryClickEvent event){
-		final ItemStack item = event.getCurrentItem();
-		if (item == null) return;
-
-		switch (item.getType()){
-			case MOB_SPAWNER:
-			case MONSTER_EGG:
-				boolean flag = false;
-				for (final Enchantment e : item.getEnchantments().keySet()){
-					item.removeEnchantment(e);
-					flag = true;
-				}
-				if (flag){
-					Player player = (Player) event.getWhoClicked();
-					log.info(logPrefix+ "Player " + player.getName() + " clicked item has invalid enchant! Removed! item: " + item.getType().name());
-					Actions.message(null, player, "&cクリックしたアイテムの不正なエンチャントを削除しました！");
-				}
-				break;
-			default:
-				break;
-		}
 	}
 }
