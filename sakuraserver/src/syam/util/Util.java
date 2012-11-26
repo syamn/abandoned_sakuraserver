@@ -44,6 +44,20 @@ public class Util {
 	}
 
 	/**
+	 * 文字列がfloat型に変換できるか返す
+	 * @param str チェックする文字列
+	 * @return 変換成功ならtrue、失敗ならfalse
+	 */
+	public static boolean isFloat(String str) {
+		try{
+			Float.parseFloat(str);
+		}catch (NumberFormatException e){
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * PHPの join(array, delimiter) と同じ関数
 	 * @param s 結合するコレクション
 	 * @param delimiter デリミタ文字

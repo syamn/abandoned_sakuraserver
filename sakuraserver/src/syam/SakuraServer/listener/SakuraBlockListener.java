@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import net.minecraft.server.Packet62NamedSoundEffect;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
@@ -16,6 +18,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,6 +27,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.world.PortalCreateEvent;
@@ -32,6 +36,7 @@ import org.bukkit.inventory.ItemStack;
 
 import syam.SakuraServer.SakuraServer;
 import syam.util.Actions;
+import syam.util.Util;
 
 
 public class SakuraBlockListener implements Listener {
@@ -259,7 +264,54 @@ public class SakuraBlockListener implements Listener {
 				Actions.permcastMessage("sakuraserver.helper", "&c[通知] &6"+player.getName()+" &fが回復看板を仮設置しました"+loc);
 			}
 			/* ヒール看板終わり */
+			else if (event.getLine(0).contains("[Sound]")){
+				if (player.hasPermission("sakuraserver.helper")){
+					event.setLine(0, "§1[Sound]");
+					Actions.message(null, player, "&1SoundEffect sign created!");
+				}else{
+					event.setLine(0, "§4Error!");
+					Actions.message(null, player, "&1Permission Denied! :(");
+				}
+			}
 		}
 	}
+
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onBlockRedstone(final BlockRedstoneEvent event){
+		final Block block = event.getBlock();
+		final BlockState state = event.getBlock().getState();
+
+		if (state instanceof Sign && event.getNewCurrent() > 0){
+			final Sign sign = (Sign)state;
+
+			if (sign.getLine(0).equals("§1[Sound]")){
+				final Location bloc = block.getLocation();
+
+				// get sound
+				final String sound = sign.getLine(1) + sign.getLine(2);
+
+				// get volume, radius
+				String[] line4 = sign.getLine(3).split(":");
+				if (line4.length != 2 || !Util.isFloat(line4[0]) || !Util.isDouble(line4[1])) return;
+				float vol = Float.parseFloat(line4[0]);
+				final double radius = Double.parseDouble(line4[1]);
+
+				if (sound.length() <= 0 || vol <= 0F || radius <= 0D) return;
+
+				for (Player player : block.getWorld().getPlayers()){
+					Location ploc = player.getLocation();
+					if (ploc.distance(bloc) > radius){
+						continue;
+					}
+
+					((CraftPlayer)player).getHandle().netServerHandler.sendPacket(
+							new Packet62NamedSoundEffect(sound, ploc.getX(), ploc.getY(), ploc.getZ(), vol, 1.0F)
+							);
+
+				}
+			}
+		}
+	}
+
 
 }

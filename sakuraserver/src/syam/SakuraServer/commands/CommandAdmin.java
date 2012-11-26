@@ -6,10 +6,13 @@ package syam.SakuraServer.commands;
 
 import java.util.Map;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.Packet201PlayerInfo;
+import net.minecraft.server.Packet62NamedSoundEffect;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -227,13 +230,19 @@ public class CommandAdmin extends BaseCommand{
 
 		// テスト・デバッグ用
 		if (args.size() >= 1 && args.get(0).equalsIgnoreCase("test")){
-			ItemStack item = player.getItemInHand();
-			if (item == null) return;
+			if (args.size() < 3) return;
 
-			Map<Enchantment, Integer> enc = item.getEnchantments();
-			for (Enchantment e : enc.keySet()){
-				item.removeEnchantment(e);
-			}
+			Player p = Bukkit.getPlayer(args.get(1));
+			if (p == null || !p.isOnline()) return;
+
+			Location loc = p.getLocation();
+			CraftPlayer cp = (CraftPlayer)p;
+			cp.getHandle().netServerHandler.sendPacket(
+					new Packet62NamedSoundEffect(args.get(3).trim(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), Float.parseFloat(args.get(2)), 1.0F)
+					);
+			Actions.message(null, p, "にゃー");
+
+			//MinecraftServer.getServer().getServerConfigurationManager().sendpack..
 
 			return;
 		}

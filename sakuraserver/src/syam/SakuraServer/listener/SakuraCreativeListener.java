@@ -55,7 +55,7 @@ public class SakuraCreativeListener implements Listener{
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPlayerItemHeldEvent(final PlayerItemHeldEvent event){
 		final Player player = event.getPlayer();
-		if (!player.getWorld().getName().equals("creative") || player.hasPermission("sakuraserver.admin")){
+		if (!player.getWorld().getName().equals("creative") || player.hasPermission("sakura.creative.itembypass")){
 			return;
 		}
 
