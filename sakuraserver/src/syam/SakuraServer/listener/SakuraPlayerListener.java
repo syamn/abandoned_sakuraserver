@@ -366,11 +366,11 @@ public class SakuraPlayerListener implements Listener {
 		// 進行方向のブロックを取得する (下半身部と上半身部)
 		Location checkLoc = toLoc.clone().add(diffLoc.clone().multiply(3.0D));
 		checkLoc.setY(toLoc.getY());
-		Block checkUnderBlock =checkLoc.getBlock();
-		Block checkUpperBlock = checkUnderBlock.getRelative(BlockFace.UP, 1);
+		Block up =checkLoc.getBlock();
+		Block down = up.getRelative(BlockFace.UP, 1);
 
-		if (checkUnderBlock.getType() == Material.DIAMOND_BLOCK ||
-				checkUpperBlock.getType() == Material.DIAMOND_BLOCK){
+		if (up.getType() == Material.DIAMOND_BLOCK ||
+				down.getType() == Material.DIAMOND_BLOCK){
 
 			Actions.message(null, player, "&c Touch Diamond block!");
 
@@ -385,6 +385,45 @@ public class SakuraPlayerListener implements Listener {
 			Vector vect = new Vector((-(dir.getX())) * 5.0D, 2.0D, (-(dir.getZ())) * 5.0D);
 
 			player.setVelocity(vect);
+		}
+
+		if (true) return;
+
+		if (player.getName().equals("tetaemon")){
+			if (!up.getType().isBlock() && !down.getType().isBlock()){
+				return;
+			}
+
+			switch (up.getType()){
+				case AIR:
+				case TORCH:
+				case REDSTONE_TORCH_OFF:
+				case REDSTONE_TORCH_ON:
+				case REDSTONE_WIRE:
+				case STEP:
+				case WOOD_STEP:
+				case SANDSTONE_STAIRS:
+				case SIGN_POST:
+					switch (down.getType()){
+						case AIR:
+						case TORCH:
+						case REDSTONE_TORCH_OFF:
+						case REDSTONE_TORCH_ON:
+						case REDSTONE_WIRE:
+						case STEP:
+						case WOOD_STEP:
+						case SANDSTONE_STAIRS:
+						case SIGN_POST:
+							return;
+					}
+			}
+
+			Actions.message(null, player, "&c Touch block :3");
+			if (!player.getGameMode().equals(GameMode.SURVIVAL))
+				player.setGameMode(GameMode.SURVIVAL);
+
+			player.setFireTicks(20 * 60);
+			player.setVelocity(player.getVelocity().add(new Vector(0D, 5.0D, 0D)));
 		}
 	}
 

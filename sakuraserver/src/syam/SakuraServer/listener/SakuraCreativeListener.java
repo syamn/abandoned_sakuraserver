@@ -6,12 +6,15 @@ package syam.SakuraServer.listener;
 
 import java.util.logging.Logger;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -62,17 +65,36 @@ public class SakuraCreativeListener implements Listener{
 		final Inventory inv = player.getInventory();
 		final ItemStack item = inv.getItem(event.getNewSlot());
 		if (item == null) return;
-		if (isNotAllowedItem(item)){
+		if (isNotAllowedItem(item.getType())){
 			//event.getPlayer().setItemInHand(null);
 			inv.setItem(event.getNewSlot(), null);
 			Actions.message(null, player, "&cこのアイテムは使用できません！");
 		}
 	}
 
-	private boolean isNotAllowedItem(final ItemStack is){
-		if (is == null) return false;
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onPlayerInteract(final PlayerInteractEvent event){
+		final Player player = event.getPlayer();
+		if (!player.getWorld().getName().equals("creative") || player.hasPermission("sakura.creative.itembypass")){
+			return;
+		}
 
-		switch(is.getType()){
+		if (event.getMaterial() == null) return;
+		if (isNotAllowedItem(event.getMaterial())){
+			event.setCancelled(true);
+			event.setUseInteractedBlock(Result.DENY);
+			event.setUseItemInHand(Result.DENY);
+			player.setItemInHand(null);
+
+			player.kickPlayer("Try to use banned item!");
+		}
+	}
+
+
+	private boolean isNotAllowedItem(final Material mat){
+		if (mat == null) return false;
+
+		switch(mat){
 			case EXP_BOTTLE:
 			case SNOW_BALL:
 			case MONSTER_EGG:
