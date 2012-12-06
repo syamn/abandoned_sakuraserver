@@ -384,7 +384,12 @@ public class SakuraPlayerListener implements Listener {
 			Vector dir = diffLoc.getDirection();
 			Vector vect = new Vector((-(dir.getX())) * 5.0D, 2.0D, (-(dir.getZ())) * 5.0D);
 
-			player.setVelocity(vect);
+
+			if (player.getVehicle() == null){
+				player.setVelocity(vect);
+			}else{
+				player.getVehicle().setVelocity(vect);
+			}
 		}
 
 		if (true) return;

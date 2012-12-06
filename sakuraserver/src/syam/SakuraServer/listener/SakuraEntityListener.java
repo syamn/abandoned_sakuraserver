@@ -167,27 +167,30 @@ public class SakuraEntityListener implements Listener {
 		}
 
 		// プレイヤーがプレイヤーに攻撃した
-		if ((ent instanceof Player) && (damager instanceof Player)){
+		if ((damager instanceof Player)){
 			Player player = (Player) damager;
-			Player targetPlayer = (Player) ent;
+
+			if (!(ent instanceof Player) && !player.hasPermission("sakuraserver.admin")){
+				return;
+			}
 
 			ItemStack hand = player.getItemInHand();
 			// 手に持っているアイテムが骨
 			if (hand.getType() == Material.BONE){
 				// 既に乗られているプレイヤーには乗らない
-				if (targetPlayer.getPassenger() == null){
+				if (ent.getPassenger() == null){
 
 					// 手に持っているアイテムを1つ減らす
 					player.setItemInHand(Actions.decrementItem(hand, 1));
 
 					// 乗る
-					targetPlayer.setPassenger(player);
+					ent.setPassenger(player);
 					Actions.message(null, player, "&bプレイヤーに乗りました！");
 
 					// 叩いたプレイヤーに乗っているプレイヤーが自分の場合は降りる
-				}else if((targetPlayer.getPassenger() instanceof Player) &&
-						(Player) targetPlayer.getPassenger() == player){
-					targetPlayer.eject();
+				}else if((ent.getPassenger() instanceof Player) &&
+						(Player) ent.getPassenger() == player){
+					ent.eject();
 					Actions.message(null, player, "&bプレイヤーから降りました！");
 					// 他人がそのプレイヤーに既にのっている
 				}else{
