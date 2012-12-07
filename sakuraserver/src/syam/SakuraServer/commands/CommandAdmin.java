@@ -4,6 +4,8 @@
  */
 package syam.SakuraServer.commands;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.server.MinecraftServer;
@@ -14,13 +16,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 
 import syam.SakuraServer.SakuraServer;
+import syam.SakuraServer.util.TagItem;
 import syam.util.Actions;
 import syam.util.Util;
 
@@ -226,6 +231,110 @@ public class CommandAdmin extends BaseCommand{
 			Actions.message(sender, null, "&a'"+removeName+"&a'をTabリストから削除しました");
 
 			return;
+		}
+
+		// admin tp [name] (world) [x] [y] [z] (yaw) (pitch) [message]
+		if (args.size() >= 5 && args.get(0).equalsIgnoreCase("tp")){
+			args.remove(0);
+
+			// check player
+			final String targetName = args.remove(0);
+			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				@Override
+				public void run(){
+					Player target = Bukkit.getPlayer(targetName);
+					if (target == null || !target.isOnline()){
+						log.warning(logPrefix+"Teleport aborted. Player offline: " + targetName);
+						return;
+					}
+
+					// check location
+					World world = target.getWorld();
+					if (!Util.isDouble(args.get(0))){
+						String wname = args.remove(0);
+						world = Bukkit.getWorld(wname);
+						if (world == null){
+							log.warning(logPrefix+"Teleport aborted. World not found: " + wname);
+							return; // World not found
+						}
+					}
+					if (!Util.isDouble(args.get(0)) || !Util.isDouble(args.get(1)) || !Util.isDouble(args.get(2))){
+						log.warning(logPrefix+"Teleport aborted. Invalid location: " + args.get(0) + "," + args.get(1) + "," + args.get(2));
+						return; // invalid location
+					}
+
+					double x = Double.parseDouble(args.remove(0));
+					double y = Double.parseDouble(args.remove(0));
+					double z = Double.parseDouble(args.remove(0));
+					Location loc = new Location(world, x, y, z);
+
+					// check yaw/pitch
+					if (args.size() >= 2 && Util.isFloat(args.get(0)) && Util.isFloat(args.get(1))){
+						loc.setYaw(Float.valueOf(args.remove(0)));
+						loc.setPitch(Float.valueOf(args.remove(0)));
+					}
+
+					String msg = (args.size() > 0) ? Util.join(args, " ") : null;
+
+					// do action
+					target.teleport(loc, TeleportCause.PLUGIN);
+					if (msg != null) Actions.message(null, target, msg);
+					log.info(logPrefix+"Teleported player:" + target.getName() + " to " + loc.getWorld().getName() + ":" + loc.getX() + "," + loc.getY() + "," + loc.getZ());
+				}
+			}, 0L);
+		}
+
+		// admin spawn [player]
+		if (args.size() >= 2 && args.get(0).equalsIgnoreCase("spawn")){
+			final String targetName = args.get(1);
+
+			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				@Override
+				public void run(){
+					final Player target = Bukkit.getPlayer(targetName);
+					if (target == null || !target.isOnline()){
+						log.warning(logPrefix+"Spawn aborted. Player offline: " + targetName);
+						return;
+					}
+					target.teleport(target.getWorld().getSpawnLocation(), TeleportCause.PLUGIN);
+					Actions.message(null, target, "&aスポーン地点にテレポートしました");
+					log.info(logPrefix + "Teleported to spawn player:" +target.getName());
+				}
+			}, 1L);
+		}
+
+		if (args.size() >= 3 && args.get(0).equalsIgnoreCase("item") && player != null){
+			args.remove(0);
+			final String action = args.remove(0);
+			final String str = Actions.coloring(Util.join(args, " "));
+
+			ItemStack is = player.getItemInHand();
+			if (is == null) return;
+
+			TagItem item = new TagItem(is);
+			if (action.equalsIgnoreCase("name")){
+				List<String> temp = item.getLoreList();
+				item.setName(str);
+				item.setLore(temp);
+			}else if (action.equalsIgnoreCase("lore")){
+				ArrayList<String> lores = new ArrayList<String>();
+				lores.add(str);
+				if (item.getFrom() != null && !item.getFrom().equals("")){
+					lores.add("From : "+item.getFrom());
+					lores.add("To : "+item.getTo());
+				}
+				item.setLore(lores);
+			}else if (action.equalsIgnoreCase("to")){
+				item.setTo(str);
+			}else if (action.equalsIgnoreCase("from")){
+				item.setFrom(str);
+			}
+			else{
+				Actions.message(null, player, "Unknown!");
+				return;
+			}
+			player.setItemInHand(item);
+			Actions.message(null, player, "&aSuccess!");
 		}
 
 		// テスト・デバッグ用

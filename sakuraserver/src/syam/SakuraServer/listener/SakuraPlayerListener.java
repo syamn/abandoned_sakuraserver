@@ -75,7 +75,7 @@ public class SakuraPlayerListener implements Listener {
 		SakuraPlayer sakuraPlayer = new SakuraPlayer(player.getName());
 		SakuraServer.playerData.put(player, sakuraPlayer);
 
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(SakuraServer.getInstance(), new Runnable() {
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 			@Override
 			public void run() {
 				// 重い処理はタイマー内の別タスク内で行う
@@ -86,6 +86,17 @@ public class SakuraPlayerListener implements Listener {
 				//Actions.checkResourceWorld(player);
 			}
 		}, 0L);
+
+		// 初回接続
+		if (!player.hasPlayedBefore()) {
+			final int unique = Bukkit.getOfflinePlayers().length;
+			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				@Override
+				public void run() {
+					Actions.broadcastMessage("&6現在のユニークビジター数: " + unique + " プレイヤー");
+				}
+			}, 5L); // 0.5s after
+		}
 	}
 
 	/**

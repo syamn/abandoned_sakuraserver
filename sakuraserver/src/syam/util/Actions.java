@@ -296,6 +296,7 @@ public class Actions {
 		message(sender, null, " /admin bcast <メッセージ> &7- ブロードキャスト");
 		message(sender, null, " /admin name <名前> <色> &7- TabList表示名変更");
 		message(sender, null, " /admin color <色> &7- TabList表示色変更");
+		message(sender, null, " /admin tp [name] (world) [x] [y] [z] (yaw) (pitch) [message]");
 		message(sender, null, " /admin test &7- テスト・デバッグ用");
 		message(sender, null, "&c===================================");
 	}
