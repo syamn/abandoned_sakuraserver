@@ -4,10 +4,10 @@ package syam.SakuraServer.listener;
 import java.lang.reflect.Field;
 import java.util.logging.Logger;
 
-import net.minecraft.server.NBTTagCompound;
-import net.minecraft.server.NBTTagList;
-import net.minecraft.server.Packet201PlayerInfo;
-import net.minecraft.server.TileEntityMobSpawner;
+import net.minecraft.server.v1_4_5.NBTTagCompound;
+import net.minecraft.server.v1_4_5.NBTTagList;
+import net.minecraft.server.v1_4_5.Packet201PlayerInfo;
+import net.minecraft.server.v1_4_5.TileEntityMobSpawner;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -18,8 +18,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.block.CraftCreatureSpawner;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_4_5.block.CraftCreatureSpawner;
+import org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

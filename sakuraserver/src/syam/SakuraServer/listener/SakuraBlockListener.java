@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import net.minecraft.server.Packet62NamedSoundEffect;
+import net.minecraft.server.v1_4_5.Packet62NamedSoundEffect;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -18,7 +18,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -177,6 +177,8 @@ public class SakuraBlockListener implements Listener {
 	//ポータル移動
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPlayerPortal(final PlayerPortalEvent event){
+		event.setCancelled(true);
+		if (true )return;
 		final Player player = event.getPlayer();
 		final Location from = event.getFrom();
 		final Environment fromEnv = from.getWorld().getEnvironment();
@@ -211,6 +213,7 @@ public class SakuraBlockListener implements Listener {
 	private int getFirtstPortalY(final World w, final int x, final int z, final Player player){
 		final Chunk chunk = w.getChunkAt(x, z);
 		if (!w.isChunkLoaded(x, z) && w.loadChunk(x, z, false)){
+			log.info("debug1");
 			return -1;
 		}
 		for (int y = 2; y < 256; y++){ // don't check y=0,1
@@ -218,6 +221,7 @@ public class SakuraBlockListener implements Listener {
 				return y;
 			}
 		}
+		log.info("debug2");
 		return -1;
 	}
 

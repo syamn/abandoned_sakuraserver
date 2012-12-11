@@ -7,11 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack;
 
-import net.minecraft.server.NBTTagCompound;
-import net.minecraft.server.NBTTagList;
-import net.minecraft.server.NBTTagString;
+import net.minecraft.server.v1_4_5.*;
 
 /**
  * TagItem (TagItem.java)
@@ -23,7 +21,7 @@ public class TagItem extends CraftItemStack {
 
 	public TagItem(Material mat) {
 		super(mat, 1);
-		net.minecraft.server.ItemStack mitem = getHandle();
+		net.minecraft.server.v1_4_5.ItemStack mitem = getHandle();
 		if (mitem == null)
 			return;
 		if (mitem.tag == null) {
@@ -32,9 +30,9 @@ public class TagItem extends CraftItemStack {
 		this.tag = mitem.tag;
 	}
 
-	public TagItem(net.minecraft.server.ItemStack item) {
+	public TagItem(net.minecraft.server.v1_4_5.ItemStack item) {
 		super(item);
-		net.minecraft.server.ItemStack mitem = getHandle();
+		net.minecraft.server.v1_4_5.ItemStack mitem = getHandle();
 		if (mitem == null)
 			return;
 		if (mitem.tag == null) {
@@ -45,7 +43,7 @@ public class TagItem extends CraftItemStack {
 
 	public TagItem(org.bukkit.inventory.ItemStack source) {
 		super(((CraftItemStack) source).getHandle());
-		net.minecraft.server.ItemStack mitem = getHandle();
+		net.minecraft.server.v1_4_5.ItemStack mitem = getHandle();
 		if (mitem == null) { return; }
 		if (mitem.tag == null) {
 			mitem.tag = new NBTTagCompound();
