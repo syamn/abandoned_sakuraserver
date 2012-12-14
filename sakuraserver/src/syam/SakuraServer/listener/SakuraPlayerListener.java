@@ -6,12 +6,14 @@ import java.util.logging.Logger;
 import net.minecraft.server.v1_4_5.NBTTagCompound;
 import net.minecraft.server.v1_4_5.NBTTagList;
 import net.minecraft.server.v1_4_5.Packet201PlayerInfo;
+import net.minecraft.server.v1_4_5.Packet62NamedSoundEffect;
 import net.minecraft.server.v1_4_5.TileEntityMobSpawner;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -24,6 +26,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -170,7 +173,7 @@ public class SakuraPlayerListener implements Listener {
      */
     @SuppressWarnings("unused")
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerInteract(PlayerInteractEvent event) {
+    public void onPlayerInteract(final PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Block block = null;
         if (event.hasBlock()) {
@@ -181,7 +184,7 @@ public class SakuraPlayerListener implements Listener {
         }
         
         /* 岩盤右クリック */
-        
+        /*
         if ((block.getType() == Material.BEDROCK) && (event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             if (SakuraServer.bedrockConfig.containsKey(player)) {
                 if (block.getLocation().equals(SakuraServer.bedrockConfig.get(player))) {
@@ -198,6 +201,7 @@ public class SakuraPlayerListener implements Listener {
                 SakuraServer.bedrockConfig.remove(player);
             }
         }
+        */
         
         /* 看板右クリック */
         if ((block.getState() instanceof Sign) && (event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
@@ -246,6 +250,61 @@ public class SakuraPlayerListener implements Listener {
         }
     }
     
+    @EventHandler(priority = EventPriority.HIGH) // ignoreCancelled = true
+    public void onPlayerRightClickWithItem(final PlayerInteractEvent event) {
+        // instead of ignoreCancelled = true
+        if (event.useItemInHand() == Result.DENY){
+            return;
+        }
+        
+        final Player player = event.getPlayer();
+
+        // return if not right click
+        if (!(Action.RIGHT_CLICK_AIR.equals(event.getAction()) || Action.RIGHT_CLICK_BLOCK.equals(event.getAction()))) {
+            return;
+        }
+        
+        //return if player not item in hand
+        ItemStack is = player.getItemInHand();
+        if (is == null || is.getType().equals(Material.AIR)){
+            return;
+        }
+
+        // 羽
+        if (is.getType().equals(Material.FEATHER)) {
+            // return if player on end environment
+            if (player.getWorld().getEnvironment().equals(Environment.THE_END)){
+                return;
+            }
+            if (!player.getGameMode().equals(GameMode.CREATIVE)){
+                player.setItemInHand(Actions.decrementItem(is, 1));
+            }
+
+            //Block b = player.getTargetBlock(null, 500);
+            final Location loc = player.getLocation();
+            player.setVelocity(player.getEyeLocation().getDirection().multiply(5));
+            
+            ((CraftPlayer) player).getHandle().netServerHandler.sendPacket(new Packet62NamedSoundEffect("note.harp", loc.getX(), loc.getY(), loc.getZ(), 0.8F, 1.0F));
+        }
+    }
+    
+    @Deprecated
+    private Block getTargetPos(final Player player, final int maxDistance, final double distance) {
+        Location loc = player.getLocation();
+        Vector base = player.getVelocity();
+
+        double yaw, pitch;
+        yaw = (loc.getYaw() + 90) % 360;
+        pitch = loc.getPitch() * -1;
+
+        double value = (distance * Math.cos(Math.toRadians(pitch)));
+
+        Vector ret = new Vector((value * Math.cos(Math.toRadians(yaw))), (distance * Math.sin(Math.toRadians(pitch))), (value * Math.sin(Math.toRadians(yaw))));
+
+        Block block = ret.toLocation(player.getWorld()).getBlock();
+        return block;
+    }
+
     @Deprecated
     private void setSpawnerData(Block block) {
         if (block == null) return;
