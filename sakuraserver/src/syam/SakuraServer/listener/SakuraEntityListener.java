@@ -6,6 +6,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.PortalType;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
@@ -20,11 +22,15 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityCreatePortalEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import syam.SakuraServer.SakuraMySqlManager;
 import syam.SakuraServer.SakuraPlayer;
@@ -51,6 +57,7 @@ public class SakuraEntityListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityDeath(EntityDeathEvent event) {
         LivingEntity livEnt = event.getEntity();
+       
         
         // 他人の動物を倒したら全員に警告表示
         if ((event.getEntity().getType() == EntityType.OCELOT || event.getEntity().getType() == EntityType.WOLF) && event.getEntity().getKiller() != null && ((Tameable) event.getEntity()).isTamed()) {
@@ -201,7 +208,7 @@ public class SakuraEntityListener implements Listener {
             }
         }
     }
-    
+
     /**
      * 敵モンスターに乗っているとき、乗っているモンスターのターゲットにしない
      * 
@@ -336,6 +343,63 @@ public class SakuraEntityListener implements Listener {
                 Actions.executeCommandOnConsole("kick " + player.getName() + " ネザーポータル設置違反 at " + loc);
                 event.setCancelled(true);
             }
+        }
+    }
+
+    //@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onEntityShootBow(final EntityShootBowEvent event){
+        if (!(event.getEntity() instanceof Player)){
+            return;
+        }
+        final Player player = (Player) event.getEntity();
+        
+        if (!player.getName().equalsIgnoreCase("syamn"))
+            return; //debug
+        
+        final Entity ent = event.getProjectile();
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
+            @Override
+            public void run(){
+                player.teleport(ent);
+                ent.setPassenger(player);
+            }
+        }, 1L);
+    }
+    
+    //@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onProjectileHit(final ProjectileHitEvent event){
+        
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onPlayerFallDamage(final EntityDamageEvent event){
+        if (!DamageCause.FALL.equals(event.getCause()) || !(event.getEntity() instanceof Player)){
+            return;
+        }
+        final Player player = (Player) event.getEntity();
+        
+        Block check = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
+        
+        if (check.getType() == Material.AIR && check.getRelative(BlockFace.UP).getType() == Material.AIR){
+            check = check.getRelative(BlockFace.DOWN);
+            //Actions.message(null, player, "Shifted down block");//debug
+        }
+        //Actions.message(null, player, "*: "+check.getType().name());//debug
+        switch (check.getType()){
+            case SPONGE:
+                Vector vect = new Vector(0D, 2.0D, 0D);
+                player.setVelocity(player.getVelocity().add(vect));
+                event.setCancelled(true);
+                event.setDamage(0);
+                Actions.message(null, player, "&a(◜▿‾ *)");
+                break;
+            case LEAVES:
+                event.setCancelled(true);
+                event.setDamage(0);
+                Actions.message(null, player, "&2(◜▿‾ *)");
+                break;
+            default:
+                break;
         }
     }
 }
