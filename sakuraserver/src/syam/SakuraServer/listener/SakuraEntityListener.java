@@ -371,7 +371,7 @@ public class SakuraEntityListener implements Listener {
         
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerFallDamage(final EntityDamageEvent event){
         if (!DamageCause.FALL.equals(event.getCause()) || !(event.getEntity() instanceof Player)){
             return;
@@ -387,11 +387,19 @@ public class SakuraEntityListener implements Listener {
         //Actions.message(null, player, "*: "+check.getType().name());//debug
         switch (check.getType()){
             case SPONGE:
-                Vector vect = new Vector(0D, 2.0D, 0D);
-                player.setVelocity(player.getVelocity().add(vect));
+                //Vector vect = new Vector(0D, 2.0D, 0D);
+                //player.setVelocity(player.getVelocity().add(vect));
                 event.setCancelled(true);
                 event.setDamage(0);
                 Actions.message(null, player, "&a(◜▿‾ *)");
+                // set vector
+                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
+                    public void run(){
+                        if (player != null){
+                            player.setVelocity(player.getVelocity().add(new Vector(0D, 2.0D, 0D)));
+                        }
+                    }
+                }, 0L);
                 break;
             case LEAVES:
                 event.setCancelled(true);

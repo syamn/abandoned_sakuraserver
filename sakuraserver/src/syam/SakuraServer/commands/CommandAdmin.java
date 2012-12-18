@@ -21,9 +21,9 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import syam.SakuraServer.SakuraServer;
-import syam.SakuraServer.util.TagItem;
 import syam.util.Actions;
 import syam.util.Util;
 
@@ -307,26 +307,17 @@ public class CommandAdmin extends BaseCommand {
             final String action = args.remove(0);
             final String str = Actions.coloring(Util.join(args, " "));
             
-            ItemStack is = player.getItemInHand();
-            if (is == null) return;
+            ItemStack item = player.getItemInHand();
+            if (item == null) return;
             
-            TagItem item = new TagItem(is);
+            ItemMeta meta = item.getItemMeta();
+            //TagItem item = new TagItem(is);
             if (action.equalsIgnoreCase("name")) {
-                List<String> temp = item.getLoreList();
-                item.setName(str);
-                item.setLore(temp);
+                meta.setDisplayName(str);
             } else if (action.equalsIgnoreCase("lore")) {
                 ArrayList<String> lores = new ArrayList<String>();
                 lores.add(str);
-                if (item.getFrom() != null && !item.getFrom().equals("")) {
-                    lores.add("From : " + item.getFrom());
-                    lores.add("To : " + item.getTo());
-                }
-                item.setLore(lores);
-            } else if (action.equalsIgnoreCase("to")) {
-                item.setTo(str);
-            } else if (action.equalsIgnoreCase("from")) {
-                item.setFrom(str);
+                meta.setLore(lores);
             } else {
                 Actions.message(null, player, "Unknown!");
                 return;
