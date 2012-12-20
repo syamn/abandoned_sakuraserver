@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.server.v1_4_5.*;
+import net.minecraft.server.v1_4_6.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,7 +16,7 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_4_6.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -200,7 +200,7 @@ public class CommandAdmin extends BaseCommand {
             }
             
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-                ((CraftPlayer) player).getHandle().netServerHandler.sendPacket(new Packet201PlayerInfo(addName, true, ((CraftPlayer) player).getHandle().ping));
+                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new Packet201PlayerInfo(addName, true, ((CraftPlayer) player).getHandle().ping));
             }
             
             Actions.message(sender, null, "&a'" + addName + "&a'をTabリストに追加しました");
@@ -224,7 +224,7 @@ public class CommandAdmin extends BaseCommand {
             }
             
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-                ((CraftPlayer) player).getHandle().netServerHandler.sendPacket(new Packet201PlayerInfo(removeName, false, 9999));
+                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new Packet201PlayerInfo(removeName, false, 9999));
             }
             
             Actions.message(sender, null, "&a'" + removeName + "&a'をTabリストから削除しました");
@@ -335,7 +335,7 @@ public class CommandAdmin extends BaseCommand {
             
             Location loc = p.getLocation();
             CraftPlayer cp = (CraftPlayer) p;
-            cp.getHandle().netServerHandler.sendPacket(new Packet62NamedSoundEffect(args.get(3).trim(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), Float.parseFloat(args.get(2)), 1.0F));
+            cp.getHandle().playerConnection.sendPacket(new Packet62NamedSoundEffect(args.get(3).trim(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), Float.parseFloat(args.get(2)), 1.0F));
             Actions.message(null, p, "にゃー");
             
             // MinecraftServer.getServer().getServerConfigurationManager().sendpack..

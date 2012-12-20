@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_4_5.Packet62NamedSoundEffect;
+import net.minecraft.server.v1_4_6.Packet62NamedSoundEffect;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -19,7 +19,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_4_6.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -289,7 +289,7 @@ public class SakuraBlockListener implements Listener {
                         continue;
                     }
                     
-                    ((CraftPlayer) player).getHandle().netServerHandler.sendPacket(new Packet62NamedSoundEffect(sound, ploc.getX(), ploc.getY(), ploc.getZ(), vol, 1.0F));
+                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new Packet62NamedSoundEffect(sound, ploc.getX(), ploc.getY(), ploc.getZ(), vol, 1.0F));
                     
                 }
             }

@@ -3,11 +3,7 @@ package syam.SakuraServer.listener;
 import java.lang.reflect.Field;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_4_5.NBTTagCompound;
-import net.minecraft.server.v1_4_5.NBTTagList;
-import net.minecraft.server.v1_4_5.Packet201PlayerInfo;
-import net.minecraft.server.v1_4_5.Packet62NamedSoundEffect;
-import net.minecraft.server.v1_4_5.TileEntityMobSpawner;
+import net.minecraft.server.v1_4_6.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -19,8 +15,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.v1_4_5.block.CraftCreatureSpawner;
-import org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_4_6.block.CraftCreatureSpawner;
+import org.bukkit.craftbukkit.v1_4_6.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -71,7 +67,7 @@ public class SakuraPlayerListener implements Listener {
         
         // Tabリスト追加
         for (String addName : SakuraServer.fakeJoinedPlayerList) {
-            ((CraftPlayer) player).getHandle().netServerHandler.sendPacket(new Packet201PlayerInfo(addName, true, ((CraftPlayer) player).getHandle().ping));
+            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new Packet201PlayerInfo(addName, true, ((CraftPlayer) player).getHandle().ping));
         }
         
         // メモリマッピング
@@ -284,7 +280,7 @@ public class SakuraPlayerListener implements Listener {
             final Location loc = player.getLocation();
             player.setVelocity(player.getEyeLocation().getDirection().multiply(5));
             
-            ((CraftPlayer) player).getHandle().netServerHandler.sendPacket(new Packet62NamedSoundEffect("note.harp", loc.getX(), loc.getY(), loc.getZ(), 0.8F, 1.0F));
+            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new Packet62NamedSoundEffect("note.harp", loc.getX(), loc.getY(), loc.getZ(), 0.8F, 1.0F));
         }
     }
     
